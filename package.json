@@ -5,9 +5,16 @@
   "main": "index.html",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "echo 'No build step required for static content.'"
+    "build": "echo 'No build step required for static content.'",
+    "dev": "index.html"
   },
   "keywords": [],
   "author": "Artur Haavisto",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "tailwindcss": "^4.1.12"
+  },
+  "dependencies": {
+    "@tailwindcss/cli": "^4.1.12"
+  }
 }
