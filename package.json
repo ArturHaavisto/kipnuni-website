@@ -5,16 +5,16 @@
   "main": "index.html",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "echo 'No build step required for static content.'",
-    "dev": "index.html"
+    "build": "tailwindcss -i ./src/input.css -o ./dist/output.css",
+    "dev": "tailwindcss -i ./src/input.css -o ./dist/output.css --watch"
   },
   "keywords": [],
   "author": "Artur Haavisto",
   "license": "ISC",
   "devDependencies": {
-    "tailwindcss": "^4.1.12"
+    "tailwindcss": "^4.2.1"
   },
   "dependencies": {
-    "@tailwindcss/cli": "^4.1.12"
+    "@tailwindcss/cli": "^4.2.1"
   }
 }
