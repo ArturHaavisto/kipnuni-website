@@ -11,10 +11,8 @@
   "keywords": [],
   "author": "Artur Haavisto",
   "license": "ISC",
-  "devDependencies": {
-    "tailwindcss": "^4.2.1"
-  },
   "dependencies": {
-    "@tailwindcss/cli": "^4.2.1"
+    "@tailwindcss/cli": "^4.2.1",
+    "tailwindcss": "^4.2.1"
   }
 }
