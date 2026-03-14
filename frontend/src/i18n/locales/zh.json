@@ -1,0 +1,36 @@
+{
+  "common": {
+    "appName": "Kipnuni",
+    "loading": "加载中..."
+  },
+  "nav": {
+    "home": "首页",
+    "about": "关于",
+    "contact": "联系我们",
+    "login": "登录",
+    "logout": "退出"
+  },
+  "header": {
+    "toggleTheme": "切换主题",
+    "selectLanguage": "选择语言"
+  },
+  "home": {
+    "welcome": "欢迎来到 Kipnuni",
+    "subtitle": "现代全栈网络应用"
+  },
+  "about": {
+    "title": "关于",
+    "description": "了解更多关于 Kipnuni 的信息。"
+  },
+  "contact": {
+    "title": "联系我们",
+    "description": "与我们取得联系。"
+  },
+  "footer": {
+    "copyright": "© {{year}} Kipnuni。保留所有权利。"
+  },
+  "errors": {
+    "notFound": "页面未找到",
+    "generic": "出了点问题"
+  }
+}

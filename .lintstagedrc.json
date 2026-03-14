@@ -1,0 +1,5 @@
+{
+  "frontend/**/*.{ts,tsx}": ["npm run lint --workspace=frontend"],
+  "api/**/*.{ts,tsx}": ["npm run lint --workspace=api"],
+  "*.{json,md,css}": ["prettier --write"]
+}

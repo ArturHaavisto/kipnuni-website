@@ -1,0 +1,36 @@
+{
+  "common": {
+    "appName": "Kipnuni",
+    "loading": "Loading..."
+  },
+  "nav": {
+    "home": "Home",
+    "about": "About",
+    "contact": "Contact",
+    "login": "Log In",
+    "logout": "Log Out"
+  },
+  "header": {
+    "toggleTheme": "Toggle theme",
+    "selectLanguage": "Select language"
+  },
+  "home": {
+    "welcome": "Welcome to Kipnuni",
+    "subtitle": "A modern full-stack web application"
+  },
+  "about": {
+    "title": "About",
+    "description": "Learn more about Kipnuni."
+  },
+  "contact": {
+    "title": "Contact",
+    "description": "Get in touch with us."
+  },
+  "footer": {
+    "copyright": "© {{year}} Kipnuni. All rights reserved."
+  },
+  "errors": {
+    "notFound": "Page not found",
+    "generic": "Something went wrong"
+  }
+}

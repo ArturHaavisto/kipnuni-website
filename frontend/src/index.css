@@ -1,0 +1,26 @@
+@import 'tailwindcss';
+
+/* RTL Support */
+.rtl {
+  direction: rtl;
+}
+
+.flip-rtl {
+  transform: scaleX(-1);
+}
+
+[dir='rtl'] .space-x-reverse > :not(:last-child) {
+  margin-right: 0;
+  margin-left: 1rem;
+}
+
+/* Arabic Font */
+[dir='rtl'] body {
+  font-family: 'Noto Sans Arabic', sans-serif;
+}
+
+/* Chinese Vertical Text (Optional) */
+.vertical-text-zh {
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+}

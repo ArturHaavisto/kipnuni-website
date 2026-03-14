@@ -1,0 +1,12 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "",
+    "FUNCTIONS_WORKER_RUNTIME": "node",
+    "FUNCTIONS_WORKER_RUNTIME_VERSION": "~20",
+    "ATLAS_DATA_API_URL": "https://data.mongodb-api.com/app/.../endpoint/data/v1",
+    "ATLAS_DATA_API_KEY": "YOUR_SECRET_KEY",
+    "AUTH0_AUDIENCE": "https://api.kipnuni.com",
+    "AUTH0_ISSUER_BASE_URL": "https://your-tenant.auth0.com/"
+  }
+}

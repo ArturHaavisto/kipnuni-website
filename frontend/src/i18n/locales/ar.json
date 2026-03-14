@@ -1,0 +1,36 @@
+{
+  "common": {
+    "appName": "Kipnuni",
+    "loading": "جارٍ التحميل..."
+  },
+  "nav": {
+    "home": "الرئيسية",
+    "about": "حول",
+    "contact": "اتصل بنا",
+    "login": "تسجيل الدخول",
+    "logout": "تسجيل الخروج"
+  },
+  "header": {
+    "toggleTheme": "تبديل المظهر",
+    "selectLanguage": "اختر اللغة"
+  },
+  "home": {
+    "welcome": "مرحبًا بكم في Kipnuni",
+    "subtitle": "تطبيق ويب حديث متكامل"
+  },
+  "about": {
+    "title": "حول",
+    "description": "تعرف على المزيد حول Kipnuni."
+  },
+  "contact": {
+    "title": "اتصل بنا",
+    "description": "تواصل معنا."
+  },
+  "footer": {
+    "copyright": "© {{year}} Kipnuni. جميع الحقوق محفوظة."
+  },
+  "errors": {
+    "notFound": "الصفحة غير موجودة",
+    "generic": "حدث خطأ ما"
+  }
+}

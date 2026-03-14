@@ -1,0 +1,36 @@
+{
+  "common": {
+    "appName": "Kipnuni",
+    "loading": "Ladataan..."
+  },
+  "nav": {
+    "home": "Etusivu",
+    "about": "Tietoa",
+    "contact": "Yhteystiedot",
+    "login": "Kirjaudu sisään",
+    "logout": "Kirjaudu ulos"
+  },
+  "header": {
+    "toggleTheme": "Vaihda teemaa",
+    "selectLanguage": "Valitse kieli"
+  },
+  "home": {
+    "welcome": "Tervetuloa Kipnuniin",
+    "subtitle": "Moderni full-stack-verkkosovellus"
+  },
+  "about": {
+    "title": "Tietoa",
+    "description": "Lue lisää Kipnunista."
+  },
+  "contact": {
+    "title": "Yhteystiedot",
+    "description": "Ota meihin yhteyttä."
+  },
+  "footer": {
+    "copyright": "© {{year}} Kipnuni. Kaikki oikeudet pidätetään."
+  },
+  "errors": {
+    "notFound": "Sivua ei löytynyt",
+    "generic": "Jokin meni pieleen"
+  }
+}
