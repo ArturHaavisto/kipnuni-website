@@ -1,26 +1,30 @@
+import { useState } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { useDirection } from './hooks/useDirection';
-import Header from './components/Header';
-import Footer from './components/Footer';
-import Home from './pages/Home';
-import About from './pages/About';
-import Contact from './pages/Contact';
+import { NavigationContext } from './navigation/NavigationContext';
+import AppShell from './navigation/AppShell';
+import Now from './pages/Now';
+import Me from './pages/Me';
+import LinkPage from './pages/LinkPage';
+import MyHistory from './pages/MyHistory';
+import MyFuture from './pages/MyFuture';
 
 function App() {
   useDirection();
+  const [isExpanded, setIsExpanded] = useState(false);
 
   return (
-    <div className="flex min-h-screen flex-col">
-      <Header />
-      <main className="flex-1">
+    <NavigationContext.Provider value={{ isExpanded, setIsExpanded }}>
+      <AppShell>
         <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/contact" element={<Contact />} />
+          <Route path="/" element={<Now />} />
+          <Route path="/me" element={<Me />} />
+          <Route path="/link" element={<LinkPage />} />
+          <Route path="/history" element={<MyHistory />} />
+          <Route path="/future" element={<MyFuture />} />
         </Routes>
-      </main>
-      <Footer />
-    </div>
+      </AppShell>
+    </NavigationContext.Provider>
   );
 }
 
