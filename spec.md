@@ -4,6 +4,100 @@
 
 A modern full-stack web application built with industry-standard technologies and best practices, targeting a cloud-native architecture on Microsoft Azure.
 
+## Navigation Architecture
+
+The application supports a **Dual Navigation System**, allowing users to toggle between two distinct layout modes. To provide a robust experience, the architecture enforces the following rules:
+
+1. **Persistence:** The user's mode preference is persisted via `localStorage` using the `usehooks-ts` library's `useLocalStorage` hook. For authenticated users, the preference is additionally synced to the user's document in MongoDB (via the existing `/api/users/:id` endpoint) so it can be restored on new devices.
+2. **Transition:** Switching modes triggers a hard reload (`window.location.reload()`) to ensure clean component unmounting and a full CSS reset between the two fundamentally different layouts. See [Mode Transition Behavior](#mode-transition-behavior) for details.
+3. **Mobile Override:** On mobile devices (viewport width `< 768px`), **Traditional Mode is always the default** regardless of the stored preference. This is because the spatial down-arrow navigation conflicts with browser chrome and mobile gesture zones. When a mobile user explicitly toggles to Experimental Mode, the app requests the **Fullscreen API** (`document.documentElement.requestFullscreen()`) to reclaim the full viewport before rendering the spatial canvas.
+4. **Global CSS Strategy:** The viewport lock styles (`100dvh`, `overflow: hidden`, `overscroll-behavior: none`) required by Experimental Mode are applied **conditionally** via a `data-nav-mode="experimental"` attribute on the `<html>` element, rather than as unconditional global CSS. Traditional mode uses standard `min-h-screen` block flow.
+
+### 1. Traditional Mode (Desktop Default)
+Standard horizontal web navigation layout.
+
+#### Header
+A fixed (`sticky top-0`) horizontal bar spanning the full viewport width.
+- **Left region:** Application logo/wordmark linking to `/` (Now).
+- **Center region:** Primary navigation links — `Now`, `Me`, `Link`, `My History`, `My Future`.
+- **Right region:** Auth/Profile button (login/avatar), Language Switcher dropdown, and the **Navigation Toggle Button** (see [Navigation Toggle](#navigation-toggle)).
+- **Mobile (< 768px):** The center navigation links collapse into a hamburger menu (slide-out drawer from the left). The right region retains the Auth button and Toggle button; the Language Switcher moves into the drawer.
+
+#### Content Area
+- Standard `min-h-screen` block flow layout, content scrolls naturally.
+- Each page (`Now`, `Me`, `Link`, `My History`, `My Future`) renders as a full-width content section below the header.
+- Scrolling is unrestricted; no viewport lock is applied.
+
+#### Footer
+- A simple footer at the bottom of the content flow containing copyright information, language attribution, and secondary links.
+
+### 2. Experimental Mode (Spatial Canvas)
+A fixed-viewport, 2D spatial navigation concept where pages relate to one another via fixed 2D coordinates.
+
+#### Spatial Coordinate Mapping
+Pages are plotted on a virtual 2D grid `[X, Y]`:
+- **Now** `[0,0]` (Center Hub)
+- **My Future** `[0,1]` (Top)
+- **My History** `[0,-1]` (Bottom)
+- **Link** `[1,0]` (Right)
+- **Me** `[-1,0]` (Left)
+
+#### Layout Structure (`100dvh` Fixed Viewport)
+- **The Application Shell:** The outer rim of the display is a continuous dark frame. Its height is strictly locked to `100dvh` with `overscroll-behavior: none` to prevent native browser bounce.
+- **Arrow Navigation:** Boundary "slots" surrounding the frame containing arrow buttons pointing toward adjacent coordinates. 
+  - *Example:* When on the "Me" page `[-1,0]`, arrows appear at the Top-Right (pointing to `[0,1]`), Center-Right (pointing to `[0,0]`), and Bottom-Right (pointing to `[0,-1]`).
+- **Toggle Button:** The toggle to revert to Traditional mode is located on the right side of the frame, vertically positioned at 25% (`1/4`) of the screen height (see [Navigation Toggle](#navigation-toggle)).
+- **Inner Preview Container:** An absolute-positioned, white content container heavily inset (e.g., `inset-12`) from the screen edges, holding the active page content. Content inside is vertically scrollable (`overscroll-y-contain`), ensuring scrolling never overlaps the outer shell.
+
+#### Screen-Size Behavior (Experimental Mode)
+
+| Viewport | Preview Container | Expand/Collapse | Arrow Visibility |
+|---|---|---|---|
+| **Desktop / Tablet (≥ 768px)** | Always in "preview" state (`inset-12` / `inset-16` / `inset-20`). Content is fully readable within the inset area. | No expand/collapse interaction. The container never goes full-screen. | Always visible in the outer frame slots. |
+| **Mobile (< 768px, fullscreen)** | Starts in "preview" state with heavy borders showing limited content. | Tapping the container expands it to near-fullscreen (`inset-1 z-50`). A pill-shaped "Close" button at the bottom-center collapses it back. | Hidden while expanded; visible when collapsed. |
+
+#### Page Transition Animation
+Navigating between pages triggers a direction-aware slide animation:
+- **Engine:** `motion` (Framer Motion) `AnimatePresence` with `mode="wait"`.
+- **Direction logic:** The slide direction is computed from the delta between the current and previous spatial coordinates. E.g., navigating from `Now [0,0]` to `Link [1,0]` slides content **left** (new page enters from right).
+- **Duration:** ~300ms.
+- **Easing:** `ease-in-out`.
+- The outgoing page exits in the opposite direction simultaneously.
+
+#### Spatial Swiping Navigation
+Users can navigate the spatial grid via touch-and-drag gestures originating on the outer border frame (avoiding the inner content container). The system uses "natural scrolling" semantics — for example, touching the border and swiping down pulls the "Top" page into view.
+- **Sensitivity:** The gesture system (`motion`) uses a minimum pixel threshold to differentiate between a short "tap" (triggering a standard arrow click) and a continuous directional "swipe".
+- **Visual Feedback:** Dragging past the initial threshold before releasing displays a directional visual cue (e.g., a glow or border indicator) highlighting which direction the navigation will occur upon release.
+- **System Conflicts:** OS-level edge gestures (such as iOS's edge-swipe-to-go-back) are strictly respected and not forcefully prevented by the app. If a device interprets a gesture as an OS-level back action rather than an app swipe, the browser naturally handles it. Users can simply rely on the visible arrow buttons if their swiping surface is restricted by OS gestures.
+
+#### 3D Minigame Navigator
+To provide a highly interactive alternative way to traverse the spatial grid, Experimental Mode includes a 3D minigame overlay.
+- **Trigger & Layout:** A "Map" or "3D" toggle button is placed on the side frame. Pressing it opens an absolute-positioned, full-screen transparent modal containing a WebGL 3D canvas. Clicking anywhere on the modal outside of the main control button instantly closes the game without navigating.
+- **The 3D Scene:** The scene displays a flat structural "floor" separated into distinct zones perfectly mirroring the 2D spatial coordinate map (e.g., the center is `Now [0,0]`).
+- **The Player Object:** A controllable 3D object (initially a basic physics ball) represents the user's current navigational intent. A prominent 2D text box is overlaid at the top of the screen, dynamically displaying the name of the exact page/zone the ball is currently occupying.
+- **Zone Signage:** Each zone that the ball is *not* currently residing in features a visible 3D sign or floating text indicating which page it represents, ensuring the map orientation is constantly clear.
+- **Control Mechanism (Virtual Joystick):** A single 2D virtual joystick button acts as the sole controller. Pressing and dragging this button applies physical force to the ball, making it roll or slide across the 3D floor in the corresponding direction. 
+- **Navigation Execution:** Releasing (lifting the mouse/finger from) the joystick commits the action. The system calculates the ball's final coordinates on the floor; if it finishes in a new page's zone, the 3D overlay closes and the app natively triggers a spatial slide transition to that corresponding route.
+- **Lazy Loading (Performance):** The 3D engine libraries (`three`, `@react-three/fiber`, `@react-three/drei`) are highly heavy compared to a standard SPA payload (~600KB+ gzipped). To protect the core site's initial load time, these libraries and the Minigame component must be lazily loaded (`React.lazy()`) and dynamically imported *only* when the user clicks the "3D" trigger button for the first time.
+
+### Navigation Toggle
+The toggle is the bridge between the two modes and appears in both layouts with a consistent identity.
+
+| Context | Placement | Appearance |
+|---|---|---|
+| **Traditional Mode** | Header, right region, next to the Language Switcher | A labeled icon button (e.g., grid/compass icon + "Spatial" label). On mobile, the label is hidden and only the icon is shown. |
+| **Experimental Mode** | Right side of the outer frame, vertically at 25% screen height | A small icon button (e.g., horizontal bars icon) with a tooltip "Switch to Traditional". |
+
+- **Keyboard shortcut:** `Ctrl+Shift+E` (Windows/Linux) / `Cmd+Shift+E` (macOS) toggles the mode from either layout.
+- **Behavior:** Clicking the toggle writes the new mode to `localStorage`, then calls `window.location.reload()`. On mobile, switching **to** Experimental additionally requests the Fullscreen API.
+
+### Mode Transition Behavior
+When the user switches navigation modes:
+1. **Route preservation:** The current URL path (e.g., `/history`) is preserved across the reload. The receiving mode maps the URL to its own layout context (Traditional renders it as a standard page; Experimental maps it to the corresponding spatial coordinate `[0,-1]`).
+2. **Scroll state:** Destroyed by the hard reload. This is acceptable — both modes start at the top of their respective layouts.
+3. **Transition screen:** A brief branded splash/loading screen is shown during the reload to mask the white flash. This is implemented as an inline `<style>` + `<div>` in `index.html` (outside React) that is removed by the app's `useEffect` on mount.
+4. **Query cache:** TanStack Query's in-memory cache is destroyed by the reload. Previously fetched data will be re-fetched on the next page load subject to `staleTime` rules.
+
 ---
 
 ## Tech Stack
@@ -22,6 +116,11 @@ A modern full-stack web application built with industry-standard technologies an
 | react-i18next                    | 15.x    | React bindings for i18next                         |
 | i18next-browser-languagedetector | 8.x     | Auto-detect user language                          |
 | i18next-parser                   | 9.x     | Auto-extract translation keys                      |
+| motion (Framer Motion)           | 12.x    | Direction-aware page transition animations         |
+| usehooks-ts                      | 3.x     | Type-safe React hooks (`useLocalStorage`, `useMediaQuery`) for mode persistence and responsive detection |
+| three                            | 0.16x.x | Core WebGL 3D rendering engine for minigame nav    |
+| @react-three/fiber               | 8.x     | React renderer for Three.js (3D Minigame canvas)   |
+| @react-three/drei                | 9.x     | Abstracted helpers/components for React Three Fiber|
 
 ### Backend
 
@@ -90,7 +189,7 @@ kipnuni-website/
 ├── staticwebapp.config.json  # SWA routing and configuration
 ├── .vscode/                  # Editor configs
 │   └── launch.json           # Debugger configurations for Azure Functions
-└── spec-new.md               # This file
+└── spec.md                   # This file
 ```
 
 ---
@@ -131,12 +230,18 @@ Because Azure Functions Consumption plans scale rapidly across dynamic IP addres
 - **Backend API**: Unit/integration testing uses **Azure Functions Core Tools** to locally mock true event triggers.
 - **E2E Integration & Data Isolation**: Migrated to **Playwright**. To prevent Playwright from corrupting development data, we utilize a strictly scoped test database cluster.
 - **E2E Authentication (Playwright)**: To avoid Auth0 bot protections (CAPTCHA) and rate limits, Playwright uses **Session State Injection (`storageState`)**. A global setup script performs a single programmatic UI login (or uses a backend-issued test token), saves the browser cookies and localStorage to `playwright/.auth/user.json`, and reuses that authenticated state across all tests instead of logging in repeatedly.
+- **Dual Navigation E2E**: Playwright tests must cover both navigation modes independently and the transition between them:
+  1. **Traditional Mode:** Verify header renders, all 5 page links navigate correctly, footer is visible, hamburger menu works on mobile viewport.
+  2. **Experimental Mode:** Verify spatial canvas renders, arrow navigation between all 5 coordinates works, slide animations complete, preview container scrolls.
+  3. **Mode Toggle:** Verify switching from Traditional → Experimental preserves the current route, the transition splash appears briefly, and the spatial canvas loads at the correct coordinate. Verify the reverse direction.
+  4. **Mobile Override:** Verify that on a mobile viewport, the app always starts in Traditional mode. Verify that toggling to Experimental triggers fullscreen. Verify that exiting fullscreen reverts to Traditional.
 
 ### 5. Frontend State & Data Fetching
 
 **TanStack Query** (React Query) manages server state.
 
 - **Cost Protection**: To prevent aggressive polling from generating massive Azure Functions per-execution costs, default QueryClient settings are strictly tuned: `refetchOnWindowFocus: false`, `retry: 1`, and `staleTime: 60000` (1 minute). This ensures the SPA relies on cache rather than spamming backend REST APIs.
+- **Navigation Mode Awareness**: The query cache is destroyed on every mode switch (hard reload). This is by design — the cache rebuilds naturally as the user navigates pages in the new mode.
 
 ### 6. Local Development Experience
 
@@ -257,7 +362,7 @@ cd e2e && npx playwright test
 | POST   | `/api/users/sync` | Sync Auth0 user to MongoDB |
 | GET    | `/api/users`      | Get all users (Protected)  |
 | GET    | `/api/users/:id`  | Get user by ID (Protected) |
-| PUT    | `/api/users/:id`  | Update user (Protected)    |
+| PUT    | `/api/users/:id`  | Update user (Protected). Also used to persist the user's `navMode` preference (`"traditional"` \| `"experimental"`) in the user document. |
 | DELETE | `/api/users/:id`  | Delete user (Protected)    |
 
 ---
@@ -329,7 +434,8 @@ Create `.lintstagedrc.json` at project root:
 | -------------------- | --------------------------------------------- | ------- |
 | User Authentication  | Auth0 Integration (Email/Pwd, Social, Magic)  | Planned |
 | User Management      | CRUD operations for users via Azure Functions | Planned |
-| Responsive Design    | Mobile-first approach                         | Planned |
+| Responsive Design    | Mobile-first approach with dual navigation    | Planned |
+| Dual Navigation      | Traditional + Experimental spatial canvas     | Planned |
 | SEO Optimization     | Meta tags, sitemap                            | Planned |
 | Internationalization | Multi-language support (en/fi/zh/ar)          | Planned |
 | RTL Support          | Arabic right-to-left layout                   | Planned |
@@ -354,12 +460,13 @@ Translations are stored in `frontend/src/i18n/locales/{lang}.json`:
 ```json
 {
   "common": { "appName": "...", "loading": "...", ... },
-  "nav": { "home": "...", "about": "...", ... },
+  "nav": { "now": "...", "me": "...", "link": "...", "history": "...", "future": "...", "toggleMode": "..." },
   "header": { "toggleTheme": "...", "selectLanguage": "..." },
-  "home": { "welcome": "...", "subtitle": "...", ... },
-  "counter": { "count": "Count: {{count}}", ... },
-  "about": { ... },
-  "contact": { ... },
+  "now": { "welcome": "...", "subtitle": "...", ... },
+  "me": { ... },
+  "link": { ... },
+  "history": { ... },
+  "future": { ... },
   "footer": { ... },
   "errors": { ... }
 }
