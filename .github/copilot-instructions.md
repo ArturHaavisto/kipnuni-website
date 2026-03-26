@@ -1,8 +1,9 @@
 # GitHub Copilot Instructions: Kipnuni Website
 
 ## Project Maintenance & Specifications
-- **Update spec.md**: Whenever you implement a feature, change the architecture, or modify the tech stack, you MUST review `spec.md` and update it to reflect the current state.
-  - Update the "Status" column in feature tables (e.g., change "Planned" to "Implemented").
+- **CRITICAL - ALWAYS UPDATE `spec.md`**: The `spec.md` file is a living document. **Whenever the user provides an instruction to implement a new feature, modify the design, or change the logic, you MUST update `spec.md` to reflect these latest changes.** 
+  - Do this *alongside* or *before* writing the code. Do not wait for a separate prompt to update the documentation.
+  - Keep the "Status" column in feature tables up-to-date (e.g., change "Planned" to "Implemented" immediately after completing the work).
   - Add new utilized libraries to the Tech Stack tables.
   - Update the Project Structure tree if folders/files change significantly.
 - **User Intent Updates**: If the user's prompt implies a change to the website plan, requirements, or features, update `spec.md` first to reflect these new requirements before implementation.
