@@ -1,4 +1,4 @@
-import { StrictMode } from 'react';
+import { StrictMode, type ReactNode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import { Auth0Provider } from '@auth0/auth0-react';
@@ -17,23 +17,43 @@ const queryClient = new QueryClient({
   },
 });
 
-const root = document.getElementById('root')!;
+const AUTH0_DOMAIN = import.meta.env.VITE_AUTH0_DOMAIN as string | undefined;
+const AUTH0_CLIENT_ID = import.meta.env.VITE_AUTH0_CLIENT_ID as string | undefined;
 
-createRoot(root).render(
-  <StrictMode>
+function MaybeAuth0({ children }: { children: ReactNode }) {
+  if (!AUTH0_DOMAIN || !AUTH0_CLIENT_ID) return <>{children}</>;
+
+  return (
     <Auth0Provider
-      domain={import.meta.env.VITE_AUTH0_DOMAIN}
-      clientId={import.meta.env.VITE_AUTH0_CLIENT_ID}
+      domain={AUTH0_DOMAIN}
+      clientId={AUTH0_CLIENT_ID}
       authorizationParams={{
         redirect_uri: window.location.origin,
         audience: import.meta.env.VITE_AUTH0_AUDIENCE,
       }}
     >
+      {children}
+    </Auth0Provider>
+  );
+}
+
+// Remove splash screen
+const splash = document.getElementById('splash');
+if (splash) {
+  splash.classList.add('hidden');
+  splash.addEventListener('transitionend', () => splash.remove());
+}
+
+const root = document.getElementById('root')!;
+
+createRoot(root).render(
+  <StrictMode>
+    <MaybeAuth0>
       <QueryClientProvider client={queryClient}>
         <BrowserRouter>
           <App />
         </BrowserRouter>
       </QueryClientProvider>
-    </Auth0Provider>
+    </MaybeAuth0>
   </StrictMode>,
 );

@@ -1,13 +1,15 @@
 @import 'tailwindcss';
 
-/* ── Viewport lock ── */
-html, body, #root {
+/* ── Viewport lock — ONLY for Experimental mode ── */
+html[data-nav-mode="experimental"],
+html[data-nav-mode="experimental"] body,
+html[data-nav-mode="experimental"] #root {
   height: 100dvh;
   overflow: hidden;
   overscroll-behavior: none;
 }
 
-/* App shell — the dark border area that holds arrows */
+/* App shell — the dark border area that holds arrows (Experimental mode) */
 .app-shell {
   position: fixed;
   inset: 0;

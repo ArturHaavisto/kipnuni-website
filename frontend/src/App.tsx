@@ -1,31 +1,32 @@
-import { useState } from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { useEffect } from 'react';
 import { useDirection } from './hooks/useDirection';
-import { NavigationContext } from './navigation/NavigationContext';
-import AppShell from './navigation/AppShell';
-import Now from './pages/Now';
-import Me from './pages/Me';
-import LinkPage from './pages/LinkPage';
-import MyHistory from './pages/MyHistory';
-import MyFuture from './pages/MyFuture';
+import { useNavMode } from './hooks/useNavMode';
+import { useDarkMode } from './hooks/useDarkMode';
+import TraditionalLayout from './layouts/TraditionalLayout';
+import ExperimentalLayout from './layouts/ExperimentalLayout';
 
 function App() {
   useDirection();
-  const [isExpanded, setIsExpanded] = useState(false);
+  useDarkMode(); // sync dark class on mount
+  const { navMode, toggleMode } = useNavMode();
 
-  return (
-    <NavigationContext.Provider value={{ isExpanded, setIsExpanded }}>
-      <AppShell>
-        <Routes>
-          <Route path="/" element={<Now />} />
-          <Route path="/me" element={<Me />} />
-          <Route path="/link" element={<LinkPage />} />
-          <Route path="/history" element={<MyHistory />} />
-          <Route path="/future" element={<MyFuture />} />
-        </Routes>
-      </AppShell>
-    </NavigationContext.Provider>
-  );
+  // Keyboard shortcut: Ctrl+Shift+E (or Cmd+Shift+E on Mac) to toggle mode
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'E') {
+        e.preventDefault();
+        toggleMode();
+      }
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [toggleMode]);
+
+  if (navMode === 'experimental') {
+    return <ExperimentalLayout />;
+  }
+
+  return <TraditionalLayout />;
 }
 
 export default App;

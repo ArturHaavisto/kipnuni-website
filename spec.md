@@ -44,8 +44,11 @@ Pages are plotted on a virtual 2D grid `[X, Y]`:
 
 #### Layout Structure (`100dvh` Fixed Viewport)
 - **The Application Shell:** The outer rim of the display is a continuous dark frame. Its height is strictly locked to `100dvh` with `overscroll-behavior: none` to prevent native browser bounce.
-- **Arrow Navigation:** Boundary "slots" surrounding the frame containing arrow buttons pointing toward adjacent coordinates. 
-  - *Example:* When on the "Me" page `[-1,0]`, arrows appear at the Top-Right (pointing to `[0,1]`), Center-Right (pointing to `[0,0]`), and Bottom-Right (pointing to `[0,-1]`).
+- **Arrow Navigation:** Boundary "slots" surrounding the frame perfectly matching the exact border spaces left by the `PreviewContainer` (e.g., `h-8 md:h-16 lg:h-20` for top/bottom, `w-8 md:w-16 lg:w-20` for left/right). Arrows and texts are tightly bounded inside these slots.
+  - *Top/Bottom slots:* Use semantic flex row layout to keep arrows/text constrained inside limits.
+  - *Left/Right slots:* Use semantic flex col layout with text oriented vertically (`writingMode: vertical-rl`) to prevent width bleeding.
+  - *Corner slots:* Texts are absolutely positioned along the outer rim edges, avoiding the inner white center area.
+  - *Sizing:* Uses responsive `max-h-12 w-auto` / `max-w-12 h-auto` to flexibly fit the variable border thickness without arbitrary static dimensions.
 - **Toggle Button:** The toggle to revert to Traditional mode is located on the right side of the frame, vertically positioned at 25% (`1/4`) of the screen height (see [Navigation Toggle](#navigation-toggle)).
 - **Inner Preview Container:** An absolute-positioned, white content container heavily inset (e.g., `inset-12`) from the screen edges, holding the active page content. Content inside is vertically scrollable (`overscroll-y-contain`), ensuring scrolling never overlaps the outer shell.
 
@@ -53,8 +56,10 @@ Pages are plotted on a virtual 2D grid `[X, Y]`:
 
 | Viewport | Preview Container | Expand/Collapse | Arrow Visibility |
 |---|---|---|---|
-| **Desktop / Tablet (≥ 768px)** | Always in "preview" state (`inset-12` / `inset-16` / `inset-20`). Content is fully readable within the inset area. | No expand/collapse interaction. The container never goes full-screen. | Always visible in the outer frame slots. |
-| **Mobile (< 768px, fullscreen)** | Starts in "preview" state with heavy borders showing limited content. | Tapping the container expands it to near-fullscreen (`inset-1 z-50`). A pill-shaped "Close" button at the bottom-center collapses it back. | Hidden while expanded; visible when collapsed. |
+| **Desktop / Tablet (≥ 768px)** | Always in "preview" state (`inset-8` / `inset-16` / `inset-20`). Content is fully readable within the inset area. | No expand/collapse interaction. The container never goes full-screen. | Always visible in the outer frame slots with contextual page labels. |
+| **Mobile (< 768px)** | Starts in "preview" state with heavy borders showing limited content (`inset-8`). | Tapping the container expands it to near-fullscreen (`inset-1 z-50`). A pill-shaped "Close" button at the bottom-center collapses it back. | Hidden while expanded; visible when collapsed. |
+
+*Note: For mobile testing on a desktop, a "Mock Fullscreen" is utilized (`ENABLE_REAL_FULLSCREEN = false` fallback to `100dvh` CSS lock instead of the Fullscreen API) so that native device full-screen modes do not interrupt the developer tools.*
 
 #### Page Transition Animation
 Navigating between pages triggers a direction-aware slide animation:
@@ -66,9 +71,9 @@ Navigating between pages triggers a direction-aware slide animation:
 
 #### Spatial Swiping Navigation
 Users can navigate the spatial grid via touch-and-drag gestures originating on the outer border frame (avoiding the inner content container). The system uses "natural scrolling" semantics — for example, touching the border and swiping down pulls the "Top" page into view.
-- **Sensitivity:** The gesture system (`motion`) uses a minimum pixel threshold to differentiate between a short "tap" (triggering a standard arrow click) and a continuous directional "swipe".
-- **Visual Feedback:** Dragging past the initial threshold before releasing displays a directional visual cue (e.g., a glow or border indicator) highlighting which direction the navigation will occur upon release.
-- **System Conflicts:** OS-level edge gestures (such as iOS's edge-swipe-to-go-back) are strictly respected and not forcefully prevented by the app. If a device interprets a gesture as an OS-level back action rather than an app swipe, the browser naturally handles it. Users can simply rely on the visible arrow buttons if their swiping surface is restricted by OS gestures.
+- **8-Directional Navigation:** The gesture layout computes vectors across all 8 possible horizontal and vertical combinations (N, NE, E, SE, S, SW, W, NW). It utilizes a diagonal threshold parameter (tan 22.5° or a `0.414` ratio constraint) to distinguish corner swipes from strict cardinal directional pulls relying on total `[x,y]` deltas.
+- **Visual Feedback Glow:** Dragging displays a glowing visual trace aligned perfectly with the inner container's border. This uses a dynamic `radial-gradient` that tracks the user's intent edge while hiding the background spill via a CSS `mask-composite: exclude` (or `xor`), keeping the gradient tightly bound to a specific pixel thickness without obstructing or underlaying standard layout code.
+- **Contextual Spatial Arrows**: Surrounding directional arrows and localized page names are geometrically bound strictly to the exact perimeter dark rim calculated dynamically from the inset of the core `PreviewContainer`. This prevents any visual bleed into the center layout workspace. Flex structures dynamically stack horizontally/vertically mapping to logical boundaries (e.g. side edge labels rotate functionally leveraging `writing-mode: vertical-rl`), strictly conforming to the negative bounds to keep components visibly large but highly compliant to edge-margin restrictions.
 
 #### 3D Minigame Navigator
 To provide a highly interactive alternative way to traverse the spatial grid, Experimental Mode includes a 3D minigame overlay.
@@ -97,6 +102,19 @@ When the user switches navigation modes:
 2. **Scroll state:** Destroyed by the hard reload. This is acceptable — both modes start at the top of their respective layouts.
 3. **Transition screen:** A brief branded splash/loading screen is shown during the reload to mask the white flash. This is implemented as an inline `<style>` + `<div>` in `index.html` (outside React) that is removed by the app's `useEffect` on mount.
 4. **Query cache:** TanStack Query's in-memory cache is destroyed by the reload. Previously fetched data will be re-fetched on the next page load subject to `staleTime` rules.
+
+### Dark Mode
+
+| Aspect | Detail |
+|---|---|
+| Persistence | `localStorage` via `usehooks-ts` `useLocalStorage('darkMode', false)` |
+| Mechanism | Toggles the `dark` class on `<html>`, leveraging Tailwind CSS `dark:` variant |
+| Default | Light mode |
+| Toggle Placement | **Traditional:** Header actions bar (sun/moon icon) · **Experimental:** Right frame edge (alongside NavModeToggle) |
+| Hook | `useDarkMode()` — returns `{ isDark, toggleDark }` |
+
+- The `useDarkMode` hook is initialized in `App.tsx` to ensure the dark class is always synced on mount, regardless of navigation mode.
+- All components use Tailwind `dark:` utility classes for dark-aware styling (e.g., `bg-white dark:bg-gray-950`).
 
 ---
 
@@ -430,15 +448,15 @@ Create `.lintstagedrc.json` at project root:
 
 ### Business Requirements
 
-| Requirement          | Description                                   | Status  |
-| -------------------- | --------------------------------------------- | ------- |
-| User Authentication  | Auth0 Integration (Email/Pwd, Social, Magic)  | Planned |
-| User Management      | CRUD operations for users via Azure Functions | Planned |
-| Responsive Design    | Mobile-first approach with dual navigation    | Planned |
-| Dual Navigation      | Traditional + Experimental spatial canvas     | Planned |
-| SEO Optimization     | Meta tags, sitemap                            | Planned |
-| Internationalization | Multi-language support (en/fi/zh/ar)          | Planned |
-| RTL Support          | Arabic right-to-left layout                   | Planned |
+| Requirement          | Description                                   | Status      |
+| -------------------- | --------------------------------------------- | ----------- |
+| User Authentication  | Auth0 Integration (Email/Pwd, Social, Magic)  | Planned     |
+| User Management      | CRUD operations for users via Azure Functions | Planned     |
+| Responsive Design    | Mobile-first approach with dual navigation    | Implemented |
+| Dual Navigation      | Traditional + Experimental spatial canvas     | Implemented |
+| SEO Optimization     | Meta tags, sitemap                            | Planned     |
+| Internationalization | Multi-language support (en/fi/zh/ar)          | Implemented |
+| RTL Support          | Arabic right-to-left layout                   | Implemented |
 
 ---
 

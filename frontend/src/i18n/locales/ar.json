@@ -4,27 +4,54 @@
     "loading": "جارٍ التحميل..."
   },
   "nav": {
-    "home": "الرئيسية",
-    "about": "حول",
-    "contact": "اتصل بنا",
+    "now": "الآن",
+    "me": "أنا",
+    "link": "رابط",
+    "history": "تاريخي",
+    "future": "مستقبلي",
+    "toggleMode": "تبديل وضع التنقل",
     "login": "تسجيل الدخول",
     "logout": "تسجيل الخروج"
   },
   "header": {
     "toggleTheme": "تبديل المظهر",
-    "selectLanguage": "اختر اللغة"
+    "selectLanguage": "اختر اللغة",
+    "menu": "القائمة"
   },
-  "home": {
-    "welcome": "مرحبًا بكم في Kipnuni",
-    "subtitle": "تطبيق ويب حديث متكامل"
+  "now": {
+    "title": "الآن",
+    "subtitle": "مركز تجربتك",
+    "directions": "← أنا | → رابط | ↑ مستقبلي | ↓ تاريخي"
   },
-  "about": {
-    "title": "حول",
-    "description": "تعرف على المزيد حول Kipnuni."
+  "me": {
+    "title": "أنا",
+    "description": "ملفك الشخصي وتفضيلاتك.",
+    "detail": "ملفك الشخصي وتفضيلاتك هنا."
   },
-  "contact": {
-    "title": "اتصل بنا",
-    "description": "تواصل معنا."
+  "link": {
+    "title": "رابط",
+    "description": "الاتصالات والموارد والروابط الخارجية.",
+    "detail": "شارك الروابط وتواصل مع الآخرين واستكشف الموارد."
+  },
+  "history": {
+    "title": "تاريخي",
+    "description": "نظرة على ما مضى.",
+    "detail": "الأحداث الماضية والإنجازات والتأملات."
+  },
+  "future": {
+    "title": "مستقبلي",
+    "description": "الخطط والأهداف والتطلعات.",
+    "detail": "ارسم مستقبلك هنا."
+  },
+  "darkMode": {
+    "toggle": "تبديل الوضع الداكن",
+    "light": "فاتح",
+    "dark": "داكن"
+  },
+  "spatial": {
+    "currentPage": "الصفحة الحالية",
+    "close": "إغلاق",
+    "switchToTraditional": "التبديل إلى التنقل التقليدي"
   },
   "footer": {
     "copyright": "© {{year}} Kipnuni. جميع الحقوق محفوظة."

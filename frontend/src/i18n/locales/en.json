@@ -4,27 +4,54 @@
     "loading": "Loading..."
   },
   "nav": {
-    "home": "Home",
-    "about": "About",
-    "contact": "Contact",
+    "now": "Now",
+    "me": "Me",
+    "link": "Link",
+    "history": "My History",
+    "future": "My Future",
+    "toggleMode": "Switch navigation mode",
     "login": "Log In",
     "logout": "Log Out"
   },
   "header": {
     "toggleTheme": "Toggle theme",
-    "selectLanguage": "Select language"
+    "selectLanguage": "Select language",
+    "menu": "Menu"
   },
-  "home": {
-    "welcome": "Welcome to Kipnuni",
-    "subtitle": "A modern full-stack web application"
+  "now": {
+    "title": "Now",
+    "subtitle": "The center of your experience",
+    "directions": "← Me | → Link | ↑ My Future | ↓ My History"
   },
-  "about": {
-    "title": "About",
-    "description": "Learn more about Kipnuni."
+  "me": {
+    "title": "Me",
+    "description": "Your personal profile and preferences.",
+    "detail": "Your personal profile and preferences live here."
   },
-  "contact": {
-    "title": "Contact",
-    "description": "Get in touch with us."
+  "link": {
+    "title": "Link",
+    "description": "Connections, resources, and external links.",
+    "detail": "Share links, connect with others, and explore resources."
+  },
+  "history": {
+    "title": "My History",
+    "description": "A look back at where you have been.",
+    "detail": "Past events, accomplishments, and reflections."
+  },
+  "future": {
+    "title": "My Future",
+    "description": "Plans, goals, and aspirations.",
+    "detail": "Map out your future here."
+  },
+  "darkMode": {
+    "toggle": "Toggle dark mode",
+    "light": "Light",
+    "dark": "Dark"
+  },
+  "spatial": {
+    "currentPage": "Current page",
+    "close": "Close",
+    "switchToTraditional": "Switch to traditional navigation"
   },
   "footer": {
     "copyright": "© {{year}} Kipnuni. All rights reserved."

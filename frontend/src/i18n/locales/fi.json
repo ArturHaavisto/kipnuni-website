@@ -4,27 +4,54 @@
     "loading": "Ladataan..."
   },
   "nav": {
-    "home": "Etusivu",
-    "about": "Tietoa",
-    "contact": "Yhteystiedot",
+    "now": "Nyt",
+    "me": "Minä",
+    "link": "Linkki",
+    "history": "Historiani",
+    "future": "Tulevaisuuteni",
+    "toggleMode": "Vaihda navigointitilaa",
     "login": "Kirjaudu sisään",
     "logout": "Kirjaudu ulos"
   },
   "header": {
     "toggleTheme": "Vaihda teemaa",
-    "selectLanguage": "Valitse kieli"
+    "selectLanguage": "Valitse kieli",
+    "menu": "Valikko"
   },
-  "home": {
-    "welcome": "Tervetuloa Kipnuniin",
-    "subtitle": "Moderni full-stack-verkkosovellus"
+  "now": {
+    "title": "Nyt",
+    "subtitle": "Kokemuksesi keskipiste",
+    "directions": "← Minä | → Linkki | ↑ Tulevaisuuteni | ↓ Historiani"
   },
-  "about": {
-    "title": "Tietoa",
-    "description": "Lue lisää Kipnunista."
+  "me": {
+    "title": "Minä",
+    "description": "Henkilökohtainen profiilisi ja asetuksesi.",
+    "detail": "Henkilökohtainen profiilisi ja asetuksesi ovat täällä."
   },
-  "contact": {
-    "title": "Yhteystiedot",
-    "description": "Ota meihin yhteyttä."
+  "link": {
+    "title": "Linkki",
+    "description": "Yhteydet, resurssit ja ulkoiset linkit.",
+    "detail": "Jaa linkkejä, yhdistä muihin ja tutki resursseja."
+  },
+  "history": {
+    "title": "Historiani",
+    "description": "Katsaus menneeseen.",
+    "detail": "Menneet tapahtumat, saavutukset ja pohdinnat."
+  },
+  "future": {
+    "title": "Tulevaisuuteni",
+    "description": "Suunnitelmat, tavoitteet ja toiveet.",
+    "detail": "Kartoita tulevaisuutesi täällä."
+  },
+  "darkMode": {
+    "toggle": "Vaihda tumma tila",
+    "light": "Vaalea",
+    "dark": "Tumma"
+  },
+  "spatial": {
+    "currentPage": "Nykyinen sivu",
+    "close": "Sulje",
+    "switchToTraditional": "Vaihda perinteiseen navigointiin"
   },
   "footer": {
     "copyright": "© {{year}} Kipnuni. Kaikki oikeudet pidätetään."
