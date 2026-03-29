@@ -14,28 +14,36 @@ The application supports a **Dual Navigation System**, allowing users to toggle 
 4. **Global CSS Strategy:** The viewport lock styles (`100dvh`, `overflow: hidden`, `overscroll-behavior: none`) required by Experimental Mode are applied **conditionally** via a `data-nav-mode="experimental"` attribute on the `<html>` element, rather than as unconditional global CSS. Traditional mode uses standard `min-h-screen` block flow.
 
 ### 1. Traditional Mode (Desktop Default)
+
 Standard horizontal web navigation layout.
 
 #### Header
+
 A fixed (`sticky top-0`) horizontal bar spanning the full viewport width.
+
 - **Left region:** Application logo/wordmark linking to `/` (Now).
 - **Center region:** Primary navigation links — `Now`, `Me`, `Link`, `My History`, `My Future`.
 - **Right region:** Auth/Profile button (login/avatar), Language Switcher dropdown, and the **Navigation Toggle Button** (see [Navigation Toggle](#navigation-toggle)).
 - **Mobile (< 768px):** The center navigation links collapse into a hamburger menu (slide-out drawer from the left). The right region retains the Auth button and Toggle button; the Language Switcher moves into the drawer.
 
 #### Content Area
+
 - Standard `min-h-screen` block flow layout, content scrolls naturally.
 - Each page (`Now`, `Me`, `Link`, `My History`, `My Future`) renders as a full-width content section below the header.
 - Scrolling is unrestricted; no viewport lock is applied.
 
 #### Footer
+
 - A simple footer at the bottom of the content flow containing copyright information, language attribution, and secondary links.
 
 ### 2. Experimental Mode (Spatial Canvas)
+
 A fixed-viewport, 2D spatial navigation concept where pages relate to one another via fixed 2D coordinates.
 
 #### Spatial Coordinate Mapping
+
 Pages are plotted on a virtual 2D grid `[X, Y]`:
+
 - **Now** `[0,0]` (Center Hub)
 - **My Future** `[0,1]` (Top)
 - **My History** `[0,-1]` (Bottom)
@@ -43,26 +51,29 @@ Pages are plotted on a virtual 2D grid `[X, Y]`:
 - **Me** `[-1,0]` (Left)
 
 #### Layout Structure (`100dvh` Fixed Viewport)
+
 - **The Application Shell:** The outer rim of the display is a continuous dark frame. Its height is strictly locked to `100dvh` with `overscroll-behavior: none` to prevent native browser bounce.
 - **Arrow Navigation:** Boundary "slots" surrounding the frame perfectly matching the exact border spaces left by the `PreviewContainer` (e.g., `h-8 md:h-16 lg:h-20` for top/bottom, `w-8 md:w-16 lg:w-20` for left/right). Arrows and texts are tightly bounded inside these slots.
-  - *Top/Bottom slots:* Use semantic flex row layout to keep arrows/text constrained inside limits.
-  - *Left/Right slots:* Use semantic flex col layout with text oriented vertically (`writingMode: vertical-rl`) to prevent width bleeding.
-  - *Corner slots:* Texts are absolutely positioned along the outer rim edges, avoiding the inner white center area.
-  - *Sizing:* Uses responsive `max-h-12 w-auto` / `max-w-12 h-auto` to flexibly fit the variable border thickness without arbitrary static dimensions.
+  - _Top/Bottom slots:_ Use semantic flex row layout to keep arrows/text constrained inside limits.
+  - _Left/Right slots:_ Use semantic flex col layout with text oriented vertically (`writingMode: vertical-rl`) to prevent width bleeding.
+  - _Corner slots:_ Texts are absolutely positioned along the outer rim edges, avoiding the inner white center area.
+  - _Sizing:_ Uses responsive `max-h-12 w-auto` / `max-w-12 h-auto` to flexibly fit the variable border thickness without arbitrary static dimensions.
 - **Toggle Button:** The toggle to revert to Traditional mode is located on the right side of the frame, vertically positioned at 25% (`1/4`) of the screen height (see [Navigation Toggle](#navigation-toggle)).
 - **Inner Preview Container:** An absolute-positioned, white content container heavily inset (e.g., `inset-12`) from the screen edges, holding the active page content. Content inside is vertically scrollable (`overscroll-y-contain`), ensuring scrolling never overlaps the outer shell.
 
 #### Screen-Size Behavior (Experimental Mode)
 
-| Viewport | Preview Container | Expand/Collapse | Arrow Visibility |
-|---|---|---|---|
-| **Desktop / Tablet (≥ 768px)** | Always in "preview" state (`inset-8` / `inset-16` / `inset-20`). Content is fully readable within the inset area. | No expand/collapse interaction. The container never goes full-screen. | Always visible in the outer frame slots with contextual page labels. |
-| **Mobile (< 768px)** | Starts in "preview" state with heavy borders showing limited content (`inset-8`). | Tapping the container expands it to near-fullscreen (`inset-1 z-50`). A pill-shaped "Close" button at the bottom-center collapses it back. | Hidden while expanded; visible when collapsed. |
+| Viewport                       | Preview Container                                                                                                 | Expand/Collapse                                                                                                                            | Arrow Visibility                                                     |
+| ------------------------------ | ----------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------- |
+| **Desktop / Tablet (≥ 768px)** | Always in "preview" state (`inset-8` / `inset-16` / `inset-20`). Content is fully readable within the inset area. | No expand/collapse interaction. The container never goes full-screen.                                                                      | Always visible in the outer frame slots with contextual page labels. |
+| **Mobile (< 768px)**           | Starts in "preview" state with heavy borders showing limited content (`inset-8`).                                 | Tapping the container expands it to near-fullscreen (`inset-1 z-50`). A pill-shaped "Close" button at the bottom-center collapses it back. | Hidden while expanded; visible when collapsed.                       |
 
-*Note: For mobile testing on a desktop, a "Mock Fullscreen" is utilized (`ENABLE_REAL_FULLSCREEN = false` fallback to `100dvh` CSS lock instead of the Fullscreen API) so that native device full-screen modes do not interrupt the developer tools.*
+_Note: For mobile testing on a desktop, a "Mock Fullscreen" is utilized (`ENABLE_REAL_FULLSCREEN = false` fallback to `100dvh` CSS lock instead of the Fullscreen API) so that native device full-screen modes do not interrupt the developer tools._
 
 #### Page Transition Animation
+
 Navigating between pages triggers a direction-aware slide animation:
+
 - **Engine:** `motion` (Framer Motion) `AnimatePresence` with `mode="wait"`.
 - **Direction logic:** The slide direction is computed from the delta between the current and previous spatial coordinates. E.g., navigating from `Now [0,0]` to `Link [1,0]` slides content **left** (new page enters from right).
 - **Duration:** ~300ms.
@@ -70,34 +81,41 @@ Navigating between pages triggers a direction-aware slide animation:
 - The outgoing page exits in the opposite direction simultaneously.
 
 #### Spatial Swiping Navigation
-Users can navigate the spatial grid via touch-and-drag gestures originating on the outer border frame (avoiding the inner content container). The system uses "natural scrolling" semantics — for example, touching the border and swiping down pulls the "Top" page into view.
+
+Users can navigate the spatial grid via touch-and-drag gestures originating on the outer border frame (avoiding the inner content container). Swipe gestures are only recognised when the initial touch point falls within a **60 px edge zone** from any side (left, right, top, or bottom) of the viewport; touches starting inside the content area are ignored. The system uses "natural scrolling" semantics — for example, touching the border and swiping down pulls the "Top" page into view.
+
 - **8-Directional Navigation:** The gesture layout computes vectors across all 8 possible horizontal and vertical combinations (N, NE, E, SE, S, SW, W, NW). It utilizes a diagonal threshold parameter (tan 22.5° or a `0.414` ratio constraint) to distinguish corner swipes from strict cardinal directional pulls relying on total `[x,y]` deltas.
 - **Visual Feedback Glow:** Dragging displays a glowing visual trace aligned perfectly with the inner container's border. This uses a dynamic `radial-gradient` that tracks the user's intent edge while hiding the background spill via a CSS `mask-composite: exclude` (or `xor`), keeping the gradient tightly bound to a specific pixel thickness without obstructing or underlaying standard layout code.
 - **Contextual Spatial Arrows**: Surrounding directional arrows and localized page names are geometrically bound strictly to the exact perimeter dark rim calculated dynamically from the inset of the core `PreviewContainer`. This prevents any visual bleed into the center layout workspace. Flex structures dynamically stack horizontally/vertically mapping to logical boundaries (e.g. side edge labels rotate functionally leveraging `writing-mode: vertical-rl`), strictly conforming to the negative bounds to keep components visibly large but highly compliant to edge-margin restrictions.
 
 #### 3D Minigame Navigator
+
 To provide a highly interactive alternative way to traverse the spatial grid, Experimental Mode includes a 3D minigame overlay.
+
 - **Trigger & Layout:** A "Map" or "3D" toggle button is placed on the side frame. Pressing it opens an absolute-positioned, full-screen transparent modal containing a WebGL 3D canvas. Clicking anywhere on the modal outside of the main control button instantly closes the game without navigating.
 - **The 3D Scene:** The scene displays a flat structural "floor" separated into distinct zones perfectly mirroring the 2D spatial coordinate map (e.g., the center is `Now [0,0]`).
 - **The Player Object:** A controllable 3D object (initially a basic physics ball) represents the user's current navigational intent. A prominent 2D text box is overlaid at the top of the screen, dynamically displaying the name of the exact page/zone the ball is currently occupying.
-- **Zone Signage:** Each zone that the ball is *not* currently residing in features a visible 3D sign or floating text indicating which page it represents, ensuring the map orientation is constantly clear.
-- **Control Mechanism (Virtual Joystick):** A single 2D virtual joystick button acts as the sole controller. Pressing and dragging this button applies physical force to the ball, making it roll or slide across the 3D floor in the corresponding direction. 
+- **Zone Signage:** Each zone that the ball is _not_ currently residing in features a visible 3D sign or floating text indicating which page it represents, ensuring the map orientation is constantly clear.
+- **Control Mechanism (Virtual Joystick):** A single 2D virtual joystick button acts as the sole controller. Pressing and dragging this button applies physical force to the ball, making it roll or slide across the 3D floor in the corresponding direction.
 - **Navigation Execution:** Releasing (lifting the mouse/finger from) the joystick commits the action. The system calculates the ball's final coordinates on the floor; if it finishes in a new page's zone, the 3D overlay closes and the app natively triggers a spatial slide transition to that corresponding route.
-- **Lazy Loading (Performance):** The 3D engine libraries (`three`, `@react-three/fiber`, `@react-three/drei`) are highly heavy compared to a standard SPA payload (~600KB+ gzipped). To protect the core site's initial load time, these libraries and the Minigame component must be lazily loaded (`React.lazy()`) and dynamically imported *only* when the user clicks the "3D" trigger button for the first time.
+- **Lazy Loading (Performance):** The 3D engine libraries (`three`, `@react-three/fiber`, `@react-three/drei`) are highly heavy compared to a standard SPA payload (~600KB+ gzipped). To protect the core site's initial load time, these libraries and the Minigame component must be lazily loaded (`React.lazy()`) and dynamically imported _only_ when the user clicks the "3D" trigger button for the first time.
 
 ### Navigation Toggle
+
 The toggle is the bridge between the two modes and appears in both layouts with a consistent identity.
 
-| Context | Placement | Appearance |
-|---|---|---|
-| **Traditional Mode** | Header, right region, next to the Language Switcher | A labeled icon button (e.g., grid/compass icon + "Spatial" label). On mobile, the label is hidden and only the icon is shown. |
-| **Experimental Mode** | Right side of the outer frame, vertically at 25% screen height | A small icon button (e.g., horizontal bars icon) with a tooltip "Switch to Traditional". |
+| Context               | Placement                                                      | Appearance                                                                                                                    |
+| --------------------- | -------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| **Traditional Mode**  | Header, right region, next to the Language Switcher            | A labeled icon button (e.g., grid/compass icon + "Spatial" label). On mobile, the label is hidden and only the icon is shown. |
+| **Experimental Mode** | Right side of the outer frame, vertically at 25% screen height | A small icon button (e.g., horizontal bars icon) with a tooltip "Switch to Traditional".                                      |
 
 - **Keyboard shortcut:** `Ctrl+Shift+E` (Windows/Linux) / `Cmd+Shift+E` (macOS) toggles the mode from either layout.
 - **Behavior:** Clicking the toggle writes the new mode to `localStorage`, then calls `window.location.reload()`. On mobile, switching **to** Experimental additionally requests the Fullscreen API.
 
 ### Mode Transition Behavior
+
 When the user switches navigation modes:
+
 1. **Route preservation:** The current URL path (e.g., `/history`) is preserved across the reload. The receiving mode maps the URL to its own layout context (Traditional renders it as a standard page; Experimental maps it to the corresponding spatial coordinate `[0,-1]`).
 2. **Scroll state:** Destroyed by the hard reload. This is acceptable — both modes start at the top of their respective layouts.
 3. **Transition screen:** A brief branded splash/loading screen is shown during the reload to mask the white flash. This is implemented as an inline `<style>` + `<div>` in `index.html` (outside React) that is removed by the app's `useEffect` on mount.
@@ -105,13 +123,13 @@ When the user switches navigation modes:
 
 ### Dark Mode
 
-| Aspect | Detail |
-|---|---|
-| Persistence | `localStorage` via `usehooks-ts` `useLocalStorage('darkMode', false)` |
-| Mechanism | Toggles the `dark` class on `<html>`, leveraging Tailwind CSS `dark:` variant |
-| Default | Light mode |
+| Aspect           | Detail                                                                                                             |
+| ---------------- | ------------------------------------------------------------------------------------------------------------------ |
+| Persistence      | `localStorage` via `usehooks-ts` `useLocalStorage('darkMode', false)`                                              |
+| Mechanism        | Toggles the `dark` class on `<html>`, leveraging Tailwind CSS `dark:` variant                                      |
+| Default          | Light mode                                                                                                         |
 | Toggle Placement | **Traditional:** Header actions bar (sun/moon icon) · **Experimental:** Right frame edge (alongside NavModeToggle) |
-| Hook | `useDarkMode()` — returns `{ isDark, toggleDark }` |
+| Hook             | `useDarkMode()` — returns `{ isDark, toggleDark }`                                                                 |
 
 - The `useDarkMode` hook is initialized in `App.tsx` to ensure the dark class is always synced on mount, regardless of navigation mode.
 - All components use Tailwind `dark:` utility classes for dark-aware styling (e.g., `bg-white dark:bg-gray-950`).
@@ -122,23 +140,23 @@ When the user switches navigation modes:
 
 ### Frontend
 
-| Technology                       | Version | Purpose                                            |
-| -------------------------------- | ------- | -------------------------------------------------- |
-| React                            | 19.x    | UI library for building component-based interfaces |
-| TypeScript                       | 5.x     | Static typing for JavaScript                       |
-| Vite                             | 7.x     | Fast build tool and dev server                     |
-| Tailwind CSS                     | 4.x     | Utility-first CSS framework                        |
-| TanStack Query (React Query)     | 5.x     | Server state management and data fetching          |
-| Auth0 React SDK                  | 2.x     | Identity and authentication frontend management    |
-| i18next                          | 24.x    | Internationalization framework                     |
-| react-i18next                    | 15.x    | React bindings for i18next                         |
-| i18next-browser-languagedetector | 8.x     | Auto-detect user language                          |
-| i18next-parser                   | 9.x     | Auto-extract translation keys                      |
-| motion (Framer Motion)           | 12.x    | Direction-aware page transition animations         |
+| Technology                       | Version | Purpose                                                                                                  |
+| -------------------------------- | ------- | -------------------------------------------------------------------------------------------------------- |
+| React                            | 19.x    | UI library for building component-based interfaces                                                       |
+| TypeScript                       | 5.x     | Static typing for JavaScript                                                                             |
+| Vite                             | 7.x     | Fast build tool and dev server                                                                           |
+| Tailwind CSS                     | 4.x     | Utility-first CSS framework                                                                              |
+| TanStack Query (React Query)     | 5.x     | Server state management and data fetching                                                                |
+| Auth0 React SDK                  | 2.x     | Identity and authentication frontend management                                                          |
+| i18next                          | 24.x    | Internationalization framework                                                                           |
+| react-i18next                    | 15.x    | React bindings for i18next                                                                               |
+| i18next-browser-languagedetector | 8.x     | Auto-detect user language                                                                                |
+| i18next-parser                   | 9.x     | Auto-extract translation keys                                                                            |
+| motion (Framer Motion)           | 12.x    | Direction-aware page transition animations                                                               |
 | usehooks-ts                      | 3.x     | Type-safe React hooks (`useLocalStorage`, `useMediaQuery`) for mode persistence and responsive detection |
-| three                            | 0.16x.x | Core WebGL 3D rendering engine for minigame nav    |
-| @react-three/fiber               | 8.x     | React renderer for Three.js (3D Minigame canvas)   |
-| @react-three/drei                | 9.x     | Abstracted helpers/components for React Three Fiber|
+| three                            | 0.16x.x | Core WebGL 3D rendering engine for minigame nav                                                          |
+| @react-three/fiber               | 8.x     | React renderer for Three.js (3D Minigame canvas)                                                         |
+| @react-three/drei                | 9.x     | Abstracted helpers/components for React Three Fiber                                                      |
 
 ### Backend
 
@@ -374,14 +392,14 @@ cd e2e && npx playwright test
 
 ## API Endpoints (Azure Functions v4)
 
-| Method | Endpoint          | Description                |
-| ------ | ----------------- | -------------------------- |
-| GET    | `/api/health`     | Server health status       |
-| POST   | `/api/users/sync` | Sync Auth0 user to MongoDB |
-| GET    | `/api/users`      | Get all users (Protected)  |
-| GET    | `/api/users/:id`  | Get user by ID (Protected) |
+| Method | Endpoint          | Description                                                                                                                               |
+| ------ | ----------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| GET    | `/api/health`     | Server health status                                                                                                                      |
+| POST   | `/api/users/sync` | Sync Auth0 user to MongoDB                                                                                                                |
+| GET    | `/api/users`      | Get all users (Protected)                                                                                                                 |
+| GET    | `/api/users/:id`  | Get user by ID (Protected)                                                                                                                |
 | PUT    | `/api/users/:id`  | Update user (Protected). Also used to persist the user's `navMode` preference (`"traditional"` \| `"experimental"`) in the user document. |
-| DELETE | `/api/users/:id`  | Delete user (Protected)    |
+| DELETE | `/api/users/:id`  | Delete user (Protected)                                                                                                                   |
 
 ---
 

@@ -1,9 +1,9 @@
 @import 'tailwindcss';
 
 /* ── Viewport lock — ONLY for Experimental mode ── */
-html[data-nav-mode="experimental"],
-html[data-nav-mode="experimental"] body,
-html[data-nav-mode="experimental"] #root {
+html[data-nav-mode='experimental'],
+html[data-nav-mode='experimental'] body,
+html[data-nav-mode='experimental'] #root {
   height: 100dvh;
   overflow: hidden;
   overscroll-behavior: none;
@@ -17,6 +17,7 @@ html[data-nav-mode="experimental"] #root {
   height: 100dvh;
   background-color: #111827; /* gray-900 */
   overflow: hidden;
+  touch-action: none;
 }
 
 /* RTL Support */

@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import type { PanInfo } from 'motion/react';
 import { getRouteByPath, spatialRoutes } from '@/navigation/routes';
@@ -10,6 +10,7 @@ export type SwipeDirection =
 
 const THRESHOLD = 50; // minimum px to count as a swipe
 const DIAG_RATIO = 0.414; // tan(22.5°) — if minor/major > this → diagonal
+const EDGE_ZONE = 60; // px from screen edge to recognise a swipe start
 
 /**
  * Resolve the 8-directional delta from a pan offset.
@@ -49,10 +50,31 @@ export function useSwipeNavigation() {
   const navigate = useNavigate();
   const location = useLocation();
   const [swipeIndicator, setSwipeIndicator] = useState<SwipeDirection>(null);
+  const startedFromEdge = useRef(false);
+
+  const onPanStart = useCallback((event: PointerEvent) => {
+    setSwipeIndicator(null);
+    const x = event.clientX;
+    const y = event.clientY;
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    startedFromEdge.current = 
+      x <= EDGE_ZONE || 
+      x >= vw - EDGE_ZONE || 
+      y <= EDGE_ZONE || 
+      y >= vh - EDGE_ZONE;
+  }, []);
+
+  const onPan = useCallback((_: unknown, info: PanInfo) => {
+    if (!startedFromEdge.current) return;
+    const { indicator } = resolveDirection(info.offset.x, info.offset.y);
+    setSwipeIndicator(indicator);
+  }, []);
 
   const onPanEnd = useCallback(
     (_: unknown, info: PanInfo) => {
       setSwipeIndicator(null);
+      if (!startedFromEdge.current) return;
 
       const { dx, dy } = resolveDirection(info.offset.x, info.offset.y);
       if (dx === 0 && dy === 0) return;
@@ -67,15 +89,6 @@ export function useSwipeNavigation() {
     },
     [location.pathname, navigate],
   );
-
-  const onPan = useCallback((_: unknown, info: PanInfo) => {
-    const { indicator } = resolveDirection(info.offset.x, info.offset.y);
-    setSwipeIndicator(indicator);
-  }, []);
-
-  const onPanStart = useCallback(() => {
-    setSwipeIndicator(null);
-  }, []);
 
   return {
     swipeIndicator,
