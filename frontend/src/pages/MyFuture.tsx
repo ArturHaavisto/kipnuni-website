@@ -4,13 +4,12 @@ export default function MyFuture() {
   const { t } = useTranslation();
 
   return (
-    <div>
-      <h1 className="text-3xl font-bold text-gray-900 dark:text-white">{t('future.title')}</h1>
-      <p className="mt-3 text-gray-600 dark:text-gray-300">
-        {t('future.description')}
-      </p>
-      <div className="mt-6 space-y-4 text-gray-700 dark:text-gray-300">
-        <p>{t('future.detail')}</p>
+    <div className="mx-auto max-w-2xl text-center">
+      <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+        {t('future.title')}
+      </h1>
+      <div className="mt-6 text-gray-500 dark:text-gray-400 italic">
+        <p>{t('common.inDevelopment')}</p>
       </div>
     </div>
   );

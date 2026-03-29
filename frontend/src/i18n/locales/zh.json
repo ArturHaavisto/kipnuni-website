@@ -1,7 +1,8 @@
 {
   "common": {
     "appName": "Kipnuni",
-    "loading": "加载中..."
+    "loading": "加载中...",
+    "inDevelopment": "此页面正在开发中。"
   },
   "nav": {
     "now": "现在",
@@ -21,17 +22,29 @@
   "now": {
     "title": "现在",
     "subtitle": "你体验的中心",
-    "directions": "← 我 | → 链接 | ↑ 我的未来 | ↓ 我的历史"
+    "directions": "← 我 | → 链接 | ↑ 我的未来 | ↓ 我的历史",
+    "goToMe": "前往「我」页面，了解更多关于我的信息。"
   },
   "me": {
     "title": "我",
     "description": "你的个人资料和偏好设置。",
-    "detail": "你的个人资料和偏好设置在这里。"
+    "detail": "你的个人资料和偏好设置在这里。",
+    "goToLinks": "在这些平台上找到我："
   },
   "link": {
     "title": "链接",
     "description": "连接、资源和外部链接。",
-    "detail": "分享链接，与他人连接，探索资源。"
+    "detail": "分享链接，与他人连接，探索资源。",
+    "items": {
+      "youtube": "YouTube",
+      "github": "GitHub",
+      "linkedin": "LinkedIn",
+      "instagram": "Instagram",
+      "facebook": "Facebook",
+      "tiktok": "TikTok",
+      "telegram": "Telegram",
+      "email": "电子邮件"
+    }
   },
   "history": {
     "title": "我的历史",

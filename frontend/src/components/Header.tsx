@@ -57,8 +57,11 @@ export default function Header() {
     <header className="sticky top-0 z-40 border-b border-gray-200 bg-white/95 backdrop-blur dark:border-gray-700 dark:bg-gray-900/95">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3">
         {/* Left: Logo */}
-        <Link to="/" className="text-xl font-bold text-gray-900 dark:text-white">
-          {t('common.appName')}
+        <Link to="/" className="flex items-center gap-2">
+          <img src="/logo-website.png" alt={t('common.appName')} className="h-8 w-8 object-contain" />
+          <span className="text-xl font-bold text-gray-900 dark:text-white">
+            {t('common.appName')}
+          </span>
         </Link>
 
         {/* Center: Nav links (hidden on mobile) */}

@@ -1,5 +1,8 @@
 @import 'tailwindcss';
 
+/* ── Class-based dark mode (instead of prefers-color-scheme) ── */
+@custom-variant dark (&:where(.dark, .dark *));
+
 /* ── Viewport lock — ONLY for Experimental mode ── */
 html[data-nav-mode='experimental'],
 html[data-nav-mode='experimental'] body,
@@ -9,13 +12,12 @@ html[data-nav-mode='experimental'] #root {
   overscroll-behavior: none;
 }
 
-/* App shell — the dark border area that holds arrows (Experimental mode) */
+/* App shell — the border area that holds arrows (Experimental mode) */
 .app-shell {
   position: fixed;
   inset: 0;
   width: 100vw;
   height: 100dvh;
-  background-color: #111827; /* gray-900 */
   overflow: hidden;
   touch-action: none;
 }

@@ -1,7 +1,8 @@
 {
   "common": {
     "appName": "Kipnuni",
-    "loading": "Ladataan..."
+    "loading": "Ladataan...",
+    "inDevelopment": "Tämä sivu on kehitteillä."
   },
   "nav": {
     "now": "Nyt",
@@ -21,17 +22,29 @@
   "now": {
     "title": "Nyt",
     "subtitle": "Kokemuksesi keskipiste",
-    "directions": "← Minä | → Linkki | ↑ Tulevaisuuteni | ↓ Historiani"
+    "directions": "← Minä | → Linkki | ↑ Tulevaisuuteni | ↓ Historiani",
+    "goToMe": "Siirry Minä-sivulle saadaksesi lisätietoja siitä, kuka olen."
   },
   "me": {
     "title": "Minä",
     "description": "Henkilökohtainen profiilisi ja asetuksesi.",
-    "detail": "Henkilökohtainen profiilisi ja asetuksesi ovat täällä."
+    "detail": "Henkilökohtainen profiilisi ja asetuksesi ovat täällä.",
+    "goToLinks": "Löydät minut näiltä alustoilta:"
   },
   "link": {
     "title": "Linkki",
     "description": "Yhteydet, resurssit ja ulkoiset linkit.",
-    "detail": "Jaa linkkejä, yhdistä muihin ja tutki resursseja."
+    "detail": "Jaa linkkejä, yhdistä muihin ja tutki resursseja.",
+    "items": {
+      "youtube": "YouTube",
+      "github": "GitHub",
+      "linkedin": "LinkedIn",
+      "instagram": "Instagram",
+      "facebook": "Facebook",
+      "tiktok": "TikTok",
+      "telegram": "Telegram",
+      "email": "Sähköposti"
+    }
   },
   "history": {
     "title": "Historiani",

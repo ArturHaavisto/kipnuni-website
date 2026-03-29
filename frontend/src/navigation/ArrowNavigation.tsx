@@ -38,7 +38,7 @@ function renderContent(slot: DirectionSlot, _currentId: string, label: string) {
       strokeWidth={2.5}
       strokeLinecap="round"
       strokeLinejoin="round"
-      className={`transition-colors duration-200 text-gray-400 group-hover:text-white shrink-0 ${slotArrowRotation[slot]} ${
+      className={`transition-colors duration-200 text-gray-500 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white shrink-0 ${slotArrowRotation[slot]} ${
         isHorizontalSide || isCorner
           ? 'h-full max-h-12 w-auto'
           : 'w-full max-w-12 h-auto'
@@ -49,7 +49,7 @@ function renderContent(slot: DirectionSlot, _currentId: string, label: string) {
     </svg>
   );
 
-  const baseTextClasses = "font-bold uppercase text-gray-400 group-hover:text-white transition-colors duration-200 select-none shrink-0";
+  const baseTextClasses = "font-bold uppercase text-gray-500 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white transition-colors duration-200 select-none shrink-0";
 
   if (isHorizontalSide) {
     return (

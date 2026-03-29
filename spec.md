@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-A modern full-stack web application built with industry-standard technologies and best practices, targeting a cloud-native architecture on Microsoft Azure.
+A modern full-stack web application built with industry-standard technologies and best practices, targeting a cloud-native architecture on Microsoft Azure. The site title is **"Kipnuni - Helper of Humanity"**.
 
 ## Navigation Architecture
 
@@ -21,7 +21,7 @@ Standard horizontal web navigation layout.
 
 A fixed (`sticky top-0`) horizontal bar spanning the full viewport width.
 
-- **Left region:** Application logo/wordmark linking to `/` (Now).
+- **Left region:** Application logo image (`logo-website.png`) alongside wordmark, linking to `/` (Now). The logo is also set as the browser tab favicon.
 - **Center region:** Primary navigation links — `Now`, `Me`, `Link`, `My History`, `My Future`.
 - **Right region:** Auth/Profile button (login/avatar), Language Switcher dropdown, and the **Navigation Toggle Button** (see [Navigation Toggle](#navigation-toggle)).
 - **Mobile (< 768px):** The center navigation links collapse into a hamburger menu (slide-out drawer from the left). The right region retains the Auth button and Toggle button; the Language Switcher moves into the drawer.
@@ -52,13 +52,16 @@ Pages are plotted on a virtual 2D grid `[X, Y]`:
 
 #### Layout Structure (`100dvh` Fixed Viewport)
 
-- **The Application Shell:** The outer rim of the display is a continuous dark frame. Its height is strictly locked to `100dvh` with `overscroll-behavior: none` to prevent native browser bounce.
+- **The Application Shell:** The outer rim of the display is a continuous frame. Its background is theme-aware (`bg-gray-200` in light mode, `bg-gray-900` in dark mode). Its height is strictly locked to `100dvh` with `overscroll-behavior: none` to prevent native browser bounce.
 - **Arrow Navigation:** Boundary "slots" surrounding the frame perfectly matching the exact border spaces left by the `PreviewContainer` (e.g., `h-8 md:h-16 lg:h-20` for top/bottom, `w-8 md:w-16 lg:w-20` for left/right). Arrows and texts are tightly bounded inside these slots.
   - _Top/Bottom slots:_ Use semantic flex row layout to keep arrows/text constrained inside limits.
   - _Left/Right slots:_ Use semantic flex col layout with text oriented vertically (`writingMode: vertical-rl`) to prevent width bleeding.
   - _Corner slots:_ Texts are absolutely positioned along the outer rim edges, avoiding the inner white center area.
   - _Sizing:_ Uses responsive `max-h-12 w-auto` / `max-w-12 h-auto` to flexibly fit the variable border thickness without arbitrary static dimensions.
 - **Toggle Button:** The toggle to revert to Traditional mode is located on the right side of the frame, vertically positioned at 25% (`1/4`) of the screen height (see [Navigation Toggle](#navigation-toggle)).
+- **Logo:** The application logo (`logo-website.png`) is displayed on the left side of the frame at 25% (`1/4`) of the screen height, contained within the border strip without crossing into the content area.
+- **Language Switcher:** A globe icon button on the right side of the frame at 75% (`3/4`) of the screen height. Clicking it opens a dropdown selector for the supported languages.
+- **Dark Mode Toggle:** A sun/moon icon button on the right side of the frame, positioned directly below the Language Switcher at 75% height. Toggling it switches the entire application between light and dark themes.
 - **Inner Preview Container:** An absolute-positioned, white content container heavily inset (e.g., `inset-12`) from the screen edges, holding the active page content. Content inside is vertically scrollable (`overscroll-y-contain`), ensuring scrolling never overlaps the outer shell.
 
 #### Screen-Size Behavior (Experimental Mode)
@@ -123,16 +126,60 @@ When the user switches navigation modes:
 
 ### Dark Mode
 
-| Aspect           | Detail                                                                                                             |
-| ---------------- | ------------------------------------------------------------------------------------------------------------------ |
-| Persistence      | `localStorage` via `usehooks-ts` `useLocalStorage('darkMode', false)`                                              |
-| Mechanism        | Toggles the `dark` class on `<html>`, leveraging Tailwind CSS `dark:` variant                                      |
-| Default          | Light mode                                                                                                         |
-| Toggle Placement | **Traditional:** Header actions bar (sun/moon icon) · **Experimental:** Right frame edge (alongside NavModeToggle) |
-| Hook             | `useDarkMode()` — returns `{ isDark, toggleDark }`                                                                 |
+| Aspect           | Detail                                                                                                                                                     |
+| ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Persistence      | `localStorage` via `usehooks-ts` `useLocalStorage('darkMode', <systemDefault>)`                                                                            |
+| Mechanism        | Toggles the `dark` class on `<html>`; Tailwind CSS v4 is configured with `@custom-variant dark (&:where(.dark, .dark *))` to enable class-based dark mode  |
+| Default          | System preference (`prefers-color-scheme: dark`), then persisted user choice                                                                               |
+| Toggle Placement | **Traditional:** Header actions bar (sun/moon icon) · **Experimental:** Right frame edge at 3/4 height, below Language Switcher (sun/moon icon via lucide) |
+| Hook             | `useDarkMode()` — returns `{ isDark, toggleDark }`                                                                                                         |
 
 - The `useDarkMode` hook is initialized in `App.tsx` to ensure the dark class is always synced on mount, regardless of navigation mode.
 - All components use Tailwind `dark:` utility classes for dark-aware styling (e.g., `bg-white dark:bg-gray-950`).
+- The Experimental mode frame, arrow navigation labels, language switcher, and dark mode toggle all respond to the active theme.
+
+---
+
+## Content Strategy
+
+The application uses a **hybrid content system** to separate short UI strings from long-form page content:
+
+### Layer 1: JSON (UI Strings)
+
+Short, structural text (button labels, nav items, error messages, page titles, link labels) lives in the existing `react-i18next` JSON locale files at `frontend/src/i18n/locales/{en,fi,zh,ar}.json`. These are loaded synchronously by `i18next`.
+
+### Layer 2: Markdown (Long-form Page Content)
+
+Rich multi-paragraph text (e.g., the "Me" page biography) is authored as Markdown files inside `frontend/src/content/<lang>/<page>.md`. A custom `useMarkdownContent(page)` hook dynamically imports the correct file based on the active `i18n.language`, falling back to `en` if a translation is missing. Files are rendered via `react-markdown`.
+
+### Layer 3: YAML (Structured Data)
+
+Structured repeatable data (e.g., the social/external links list on the "Link" page) is stored in YAML files inside `frontend/src/content/`. The Vite build processes YAML natively via `@rollup/plugin-yaml`. Link display labels are resolved from the JSON locale files (`link.items.<id>`), keeping URL data and presentation text cleanly separated.
+
+### Content Directory Structure
+
+```text
+frontend/src/content/
+├── en/
+│   └── me.md             # English Me page content
+├── fi/
+│   └── me.md             # Finnish Me page content
+├── zh/
+│   └── me.md             # Chinese Me page content
+├── ar/
+│   └── me.md             # Arabic Me page content
+└── links.yaml            # Social/external links data (language-independent)
+```
+
+### Page Content Status
+
+| Page           | Content Source        | Status      |
+| -------------- | --------------------- | ----------- |
+| **Now**        | JSON (i18n)           | Implemented |
+| **Me**         | Markdown + JSON title | Implemented |
+| **Link**       | YAML + JSON labels    | Implemented |
+| **My History** | JSON (placeholder)    | Planned     |
+| **My Future**  | JSON (placeholder)    | Planned     |
 
 ---
 
@@ -154,6 +201,10 @@ When the user switches navigation modes:
 | i18next-parser                   | 9.x     | Auto-extract translation keys                                                                            |
 | motion (Framer Motion)           | 12.x    | Direction-aware page transition animations                                                               |
 | usehooks-ts                      | 3.x     | Type-safe React hooks (`useLocalStorage`, `useMediaQuery`) for mode persistence and responsive detection |
+| react-markdown                   | 9.x     | Render Markdown content as React components for long-form page text                                      |
+| @rollup/plugin-yaml              | 4.x     | Vite/Rollup plugin to import YAML files as JavaScript objects                                            |
+| react-icons                      | 5.x     | Brand/platform SVG icons (Simple Icons for YouTube/GitHub/etc., FontAwesome for LinkedIn)                |
+| lucide-react                     | 0.x     | Utility SVG icons (Globe, Mail) used in spatial language switcher and link page                          |
 | three                            | 0.16x.x | Core WebGL 3D rendering engine for minigame nav                                                          |
 | @react-three/fiber               | 8.x     | React renderer for Three.js (3D Minigame canvas)                                                         |
 | @react-three/drei                | 9.x     | Abstracted helpers/components for React Three Fiber                                                      |
@@ -206,9 +257,21 @@ This repository utilizes NPM Workspaces to separate the frontend, backend (API),
 ```text
 kipnuni-website/
 ├── frontend/                 # React frontend application
+│   ├── public/               # Static assets served as-is
+│   │   ├── logo-website.png  # Favicon & branding logo
+│   │   ├── robots.txt        # Search engine crawler rules
+│   │   └── sitemap.xml       # Sitemap for search engines
 │   ├── src/                  # Source code (components, hooks, i18n, pages)
+│   │   ├── content/          # Long-form content (Markdown & YAML)
+│   │   │   ├── en/           # English markdown content
+│   │   │   ├── fi/           # Finnish markdown content
+│   │   │   ├── zh/           # Chinese markdown content
+│   │   │   ├── ar/           # Arabic markdown content
+│   │   │   └── links.yaml    # Structured link data
+│   │   ├── hooks/            # Custom React hooks
+│   │   └── i18n/locales/     # JSON translation files (UI strings)
 │   ├── package.json          # Frontend dependencies
-│   ├── vite.config.ts        # Vite config
+│   ├── vite.config.ts        # Vite config (includes YAML plugin)
 │   └── eslint.config.js      # Frontend linting
 ├── api/                      # Azure Functions backend API (v4 Node Model)
 │   ├── src/
@@ -534,15 +597,58 @@ Use the `.vertical-text-zh` class for traditional vertical Chinese text layout:
 
 ---
 
+## SEO & Metadata
+
+The application includes foundational SEO configuration in `frontend/index.html`:
+
+| Tag / File         | Value / Purpose                                                                 |
+| ------------------ | ------------------------------------------------------------------------------- |
+| `<title>`          | "Kipnuni - Helper of Humanity"                                                  |
+| `meta description` | Personal portal and philosophy of Artur Haavisto (Kipnuni)                      |
+| `meta theme-color` | `#111827` (matches dark splash screen)                                          |
+| `link canonical`   | `https://www.kipnuni.com/`                                                      |
+| `og:*` tags        | Title, description, image, type=website, site_name, locale                      |
+| `twitter:*` tags   | Summary card with title, description, image                                     |
+| `apple-touch-icon` | `/logo-website.png`                                                             |
+| `robots.txt`       | Allows all crawlers; references `sitemap.xml`                                   |
+| `sitemap.xml`      | Lists all 5 routes (`/`, `/me`, `/link`, `/history`, `/future`) with priorities |
+| `<noscript>`       | Fallback message for users without JavaScript                                   |
+
+---
+
 ## Deployment
 
-### Production Checklist
+### Hosting
 
-- [ ] Ensure root `package.json` build scripts properly map Workspaces (e.g. `npm run build -w frontend`).
-- [ ] Configure CI/CD YAML to map SWA bindings: `app_location="frontend"`, `api_location="api"`, and `output_location="dist"`.
-- [ ] Update `.env` variables for frontend SWA Configuration (Auth0 client IDs)
-- [ ] Configure production MongoDB Atlas Cluster Data API App Endpoint.
-- [ ] Update Function App Settings with MongoDB Data API Key, URL, and Auth0 Audience variables.
+Azure Static Web Apps with the following CI/CD configuration:
+
+| Setting           | Value      |
+| ----------------- | ---------- |
+| `app_location`    | `frontend` |
+| `output_location` | `dist`     |
+| `api_location`    | `api`      |
+
+### `staticwebapp.config.json`
+
+- **SPA Fallback:** All routes rewrite to `/index.html` (except static assets and `robots.txt`).
+- **Security Headers:** `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, `Referrer-Policy: strict-origin-when-cross-origin`.
+
+### Production Checklist (Current Release)
+
+- [x] Frontend builds cleanly (`tsc -b && vite build`)
+- [x] SPA navigation fallback configured in `staticwebapp.config.json`
+- [x] SEO meta tags, Open Graph, and Twitter cards in `index.html`
+- [x] `robots.txt` and `sitemap.xml` in `public/`
+- [x] Favicon and apple-touch-icon set to `logo-website.png`
+- [x] Security headers configured
+- [x] All social link URLs populated in `links.yaml`
+- [x] i18n translations present for all 4 languages (en, fi, zh, ar)
+
+### Future Release Checklist
+
+- [ ] Configure CI/CD YAML to map SWA bindings
+- [ ] Update `.env` variables for Auth0 client IDs
+- [ ] Configure production MongoDB Atlas Cluster Data API
 - [ ] Configure Auth0 callbacks (`/callback`, `/logout`) for production domain
 - [ ] Secure API paths in `staticwebapp.config.json` via roles
 - [ ] Map custom domain and SSL in Azure SWA

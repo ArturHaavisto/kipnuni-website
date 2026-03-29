@@ -6,6 +6,8 @@ import ArrowNavigation from '@/navigation/ArrowNavigation';
 import PreviewContainer from '@/navigation/PreviewContainer';
 import { NavigationContext } from '@/navigation/NavigationContext';
 import { NavModeToggle } from '@/components/NavModeToggle';
+import { SpatialLanguageSwitcher } from '@/components/SpatialLanguageSwitcher';
+import { SpatialDarkModeToggle } from '@/components/SpatialDarkModeToggle';
 import { useSwipeNavigation } from '@/hooks/useSwipeNavigation';
 import Now from '@/pages/Now';
 import Me from '@/pages/Me';
@@ -37,7 +39,7 @@ export default function ExperimentalLayout() {
   return (
     <NavigationContext.Provider value={{ isExpanded, setIsExpanded }}>
       <motion.div
-        className="app-shell"
+        className="app-shell bg-gray-200 dark:bg-gray-900"
         onPanStart={panHandlers.onPanStart}
         onPan={panHandlers.onPan}
         onPanEnd={panHandlers.onPanEnd}
@@ -50,6 +52,25 @@ export default function ExperimentalLayout() {
         {!isExpanded && (
           <div className="absolute right-0 top-1/4 z-30 flex w-8 -translate-y-1/2 items-center justify-center md:w-16 lg:w-20">
             <NavModeToggle />
+          </div>
+        )}
+
+        {/* Logo on left border at 1/4 height */}
+        {!isExpanded && (
+          <div className="absolute left-0 top-1/4 z-30 flex w-8 -translate-y-1/2 items-center justify-center md:w-16 lg:w-20">
+            <img
+              src="/logo-website.png"
+              alt="Kipnuni"
+              className="h-6 w-6 object-contain opacity-70 md:h-10 md:w-10 lg:h-14 lg:w-14"
+            />
+          </div>
+        )}
+
+        {/* Language switcher + dark mode toggle on right border at 3/4 height */}
+        {!isExpanded && (
+          <div className="absolute right-0 top-3/4 z-30 flex w-8 -translate-y-1/2 flex-col items-center justify-center gap-8 md:w-16 md:gap-6 lg:w-20 lg:gap-8">
+            <SpatialLanguageSwitcher />
+            <SpatialDarkModeToggle />
           </div>
         )}
 
@@ -77,7 +98,7 @@ export default function ExperimentalLayout() {
               }}
               transition={{ duration: 0.3, ease: 'easeInOut' }}
             >
-              <Routes>
+              <Routes location={location}>
                 <Route path="/" element={<Now />} />
                 <Route path="/me" element={<Me />} />
                 <Route path="/link" element={<LinkPage />} />

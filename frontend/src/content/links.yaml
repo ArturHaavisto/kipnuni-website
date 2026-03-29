@@ -1,0 +1,25 @@
+links:
+  - id: youtube
+    url: "https://www.youtube.com/@kipnuni"
+    icon: youtube
+  - id: github
+    url: "https://github.com/ArturHaavisto"
+    icon: github
+  - id: linkedin
+    url: "https://www.linkedin.com/in/arturhaavisto/"
+    icon: linkedin
+  - id: instagram
+    url: "https://www.instagram.com/kipnuni/"
+    icon: instagram
+  - id: facebook
+    url: "https://www.facebook.com/kipnuni"
+    icon: facebook
+  - id: tiktok
+    url: "https://www.tiktok.com/@kipnuni"
+    icon: tiktok
+  - id: telegram
+    url: "https://t.me/kipnuni"
+    icon: telegram
+  - id: email
+    url: "mailto:contact.kipnuni@gmail.com"
+    icon: email

@@ -1,7 +1,8 @@
 {
   "common": {
     "appName": "Kipnuni",
-    "loading": "Loading..."
+    "loading": "Loading...",
+    "inDevelopment": "This page is in development."
   },
   "nav": {
     "now": "Now",
@@ -21,17 +22,29 @@
   "now": {
     "title": "Now",
     "subtitle": "The center of your experience",
-    "directions": "← Me | → Link | ↑ My Future | ↓ My History"
+    "directions": "← Me | → Link | ↑ My Future | ↓ My History",
+    "goToMe": "Head over to the Me page to learn more about who I am."
   },
   "me": {
     "title": "Me",
     "description": "Your personal profile and preferences.",
-    "detail": "Your personal profile and preferences live here."
+    "detail": "Your personal profile and preferences live here.",
+    "goToLinks": "Find me on these platforms:"
   },
   "link": {
     "title": "Link",
     "description": "Connections, resources, and external links.",
-    "detail": "Share links, connect with others, and explore resources."
+    "detail": "Share links, connect with others, and explore resources.",
+    "items": {
+      "youtube": "YouTube",
+      "github": "GitHub",
+      "linkedin": "LinkedIn",
+      "instagram": "Instagram",
+      "facebook": "Facebook",
+      "tiktok": "TikTok",
+      "telegram": "Telegram",
+      "email": "Email"
+    }
   },
   "history": {
     "title": "My History",

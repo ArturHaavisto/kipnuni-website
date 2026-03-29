@@ -26,10 +26,10 @@ export function NavModeToggle() {
     <button
       onClick={toggleMode}
       aria-label={t('spatial.switchToTraditional')}
-      className="rounded-md p-2 text-white/70 hover:text-white"
+      className="rounded-md p-1 text-gray-500 hover:text-gray-900 dark:text-white/70 dark:hover:text-white"
     >
       {/* List icon */}
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="size-6 md:size-7">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="h-6 w-6 md:h-10 md:w-10 lg:h-14 lg:w-14">
         <path fillRule="evenodd" d="M2 4.75A.75.75 0 0 1 2.75 4h14.5a.75.75 0 0 1 0 1.5H2.75A.75.75 0 0 1 2 4.75ZM2 10a.75.75 0 0 1 .75-.75h14.5a.75.75 0 0 1 0 1.5H2.75A.75.75 0 0 1 2 10Zm0 5.25a.75.75 0 0 1 .75-.75h14.5a.75.75 0 0 1 0 1.5H2.75a.75.75 0 0 1-.75-.75Z" clipRule="evenodd" />
       </svg>
     </button>
