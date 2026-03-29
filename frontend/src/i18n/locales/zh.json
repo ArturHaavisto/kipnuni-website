@@ -1,0 +1,76 @@
+{
+  "common": {
+    "appName": "Kipnuni",
+    "loading": "加载中...",
+    "inDevelopment": "此页面正在开发中。"
+  },
+  "nav": {
+    "now": "现在",
+    "me": "我",
+    "link": "链接",
+    "history": "我的历史",
+    "future": "我的未来",
+    "toggleMode": "切换导航模式",
+    "login": "登录",
+    "logout": "退出"
+  },
+  "header": {
+    "toggleTheme": "切换主题",
+    "selectLanguage": "选择语言",
+    "menu": "菜单"
+  },
+  "now": {
+    "title": "现在",
+    "subtitle": "你体验的中心",
+    "directions": "← 我 | → 链接 | ↑ 我的未来 | ↓ 我的历史",
+    "goToMe": "前往「我」页面，了解更多关于我的信息。"
+  },
+  "me": {
+    "title": "我",
+    "description": "你的个人资料和偏好设置。",
+    "detail": "你的个人资料和偏好设置在这里。",
+    "goToLinks": "在这些平台上找到我："
+  },
+  "link": {
+    "title": "链接",
+    "description": "连接、资源和外部链接。",
+    "detail": "分享链接，与他人连接，探索资源。",
+    "items": {
+      "youtube": "YouTube",
+      "github": "GitHub",
+      "linkedin": "LinkedIn",
+      "instagram": "Instagram",
+      "facebook": "Facebook",
+      "tiktok": "TikTok",
+      "telegram": "Telegram",
+      "email": "电子邮件"
+    }
+  },
+  "history": {
+    "title": "我的历史",
+    "description": "回顾你走过的路。",
+    "detail": "过去的事件、成就和反思。"
+  },
+  "future": {
+    "title": "我的未来",
+    "description": "计划、目标和愿望。",
+    "detail": "在这里规划你的未来。"
+  },
+  "darkMode": {
+    "toggle": "切换深色模式",
+    "light": "浅色",
+    "dark": "深色"
+  },
+  "spatial": {
+    "currentPage": "当前页面",
+    "close": "关闭",
+    "switchToTraditional": "切换到传统导航"
+  },
+  "footer": {
+    "copyright": "© {{year}} Kipnuni。保留所有权利。"
+  },
+  "errors": {
+    "notFound": "页面未找到",
+    "generic": "出了点问题"
+  }
+}

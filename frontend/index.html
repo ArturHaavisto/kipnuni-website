@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="UTF-8" />
+
+    <!-- Primary Meta Tags -->
+    <title>Kipnuni - Helper of Humanity</title>
+    <meta name="description" content="Personal portal and philosophy of Artur Haavisto (Kipnuni). Explore social links, projects, history, and future plans." />
+    <meta name="author" content="Artur Haavisto" />
+    <meta name="theme-color" content="#111827" />
+
+    <!-- Viewport -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="/logo-website.png" />
+    <link rel="apple-touch-icon" href="/logo-website.png" />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://www.kipnuni.com/" />
+    <meta property="og:title" content="Kipnuni - Helper of Humanity" />
+    <meta property="og:description" content="Personal portal and philosophy of Artur Haavisto (Kipnuni). Explore social links, projects, history, and future plans." />
+    <meta property="og:image" content="https://www.kipnuni.com/logo-website.png" />
+    <meta property="og:site_name" content="Kipnuni" />
+    <meta property="og:locale" content="en_US" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="Kipnuni - Helper of Humanity" />
+    <meta name="twitter:description" content="Personal portal and philosophy of Artur Haavisto (Kipnuni). Explore social links, projects, history, and future plans." />
+    <meta name="twitter:image" content="https://www.kipnuni.com/logo-website.png" />
+
+    <!-- Canonical -->
+    <link rel="canonical" href="https://www.kipnuni.com/" />
+
+    <style>
+      /* Transition splash — masks white flash during mode-switch hard reload.
+         Removed by React on mount via useEffect. */
+      #splash {
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #111827;
+        color: #e5e7eb;
+        font-family: system-ui, sans-serif;
+        font-size: 1.25rem;
+        letter-spacing: 0.05em;
+        transition: opacity 0.2s ease;
+      }
+      #splash.hidden { opacity: 0; pointer-events: none; }
+      #splash .spinner {
+        width: 28px; height: 28px;
+        border: 3px solid #374151;
+        border-top-color: #e5e7eb;
+        border-radius: 50%;
+        animation: spin 0.6s linear infinite;
+        margin-right: 12px;
+      }
+      @keyframes spin { to { transform: rotate(360deg); } }
+    </style>
+  </head>
+  <body>
+    <div id="splash"><div class="spinner"></div>Kipnuni</div>
+    <noscript>This site requires JavaScript to run.</noscript>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

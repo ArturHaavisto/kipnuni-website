@@ -1,0 +1,48 @@
+@import 'tailwindcss';
+
+/* ── Class-based dark mode (instead of prefers-color-scheme) ── */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ── Viewport lock — ONLY for Experimental mode ── */
+html[data-nav-mode='experimental'],
+html[data-nav-mode='experimental'] body,
+html[data-nav-mode='experimental'] #root {
+  height: 100dvh;
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
+/* App shell — the border area that holds arrows (Experimental mode) */
+.app-shell {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100dvh;
+  overflow: hidden;
+  touch-action: none;
+}
+
+/* RTL Support */
+.rtl {
+  direction: rtl;
+}
+
+.flip-rtl {
+  transform: scaleX(-1);
+}
+
+[dir='rtl'] .space-x-reverse > :not(:last-child) {
+  margin-right: 0;
+  margin-left: 1rem;
+}
+
+/* Arabic Font */
+[dir='rtl'] body {
+  font-family: 'Noto Sans Arabic', sans-serif;
+}
+
+/* Chinese Vertical Text (Optional) */
+.vertical-text-zh {
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+}

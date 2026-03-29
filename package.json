@@ -1,0 +1,27 @@
+{
+  "name": "kipnuni-website",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "frontend",
+    "api",
+    "e2e"
+  ],
+  "scripts": {
+    "dev": "swa start http://localhost:5173 --api-location ./api",
+    "dev:frontend": "npm run dev -w frontend",
+    "build": "npm run build -w frontend",
+    "test": "npm run test -w frontend && npm run test -w api",
+    "test:frontend": "npm run test -w frontend",
+    "test:api": "npm run test -w api",
+    "test:e2e": "cd e2e && npx playwright test",
+    "lint": "npm run lint -w frontend && npm run lint -w api",
+    "format": "prettier --write \"**/*.{ts,tsx,json,md,css}\"",
+    "prepare": "husky"
+  },
+  "devDependencies": {
+    "husky": "^9.0.0",
+    "lint-staged": "^15.0.0",
+    "prettier": "^3.0.0"
+  }
+}

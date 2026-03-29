@@ -1,0 +1,76 @@
+{
+  "common": {
+    "appName": "Kipnuni",
+    "loading": "Loading...",
+    "inDevelopment": "This page is in development."
+  },
+  "nav": {
+    "now": "Now",
+    "me": "Me",
+    "link": "Link",
+    "history": "My History",
+    "future": "My Future",
+    "toggleMode": "Switch navigation mode",
+    "login": "Log In",
+    "logout": "Log Out"
+  },
+  "header": {
+    "toggleTheme": "Toggle theme",
+    "selectLanguage": "Select language",
+    "menu": "Menu"
+  },
+  "now": {
+    "title": "Now",
+    "subtitle": "The center of your experience",
+    "directions": "← Me | → Link | ↑ My Future | ↓ My History",
+    "goToMe": "Head over to the Me page to learn more about who I am."
+  },
+  "me": {
+    "title": "Me",
+    "description": "Your personal profile and preferences.",
+    "detail": "Your personal profile and preferences live here.",
+    "goToLinks": "Find me on these platforms:"
+  },
+  "link": {
+    "title": "Link",
+    "description": "Connections, resources, and external links.",
+    "detail": "Share links, connect with others, and explore resources.",
+    "items": {
+      "youtube": "YouTube",
+      "github": "GitHub",
+      "linkedin": "LinkedIn",
+      "instagram": "Instagram",
+      "facebook": "Facebook",
+      "tiktok": "TikTok",
+      "telegram": "Telegram",
+      "email": "Email"
+    }
+  },
+  "history": {
+    "title": "My History",
+    "description": "A look back at where you have been.",
+    "detail": "Past events, accomplishments, and reflections."
+  },
+  "future": {
+    "title": "My Future",
+    "description": "Plans, goals, and aspirations.",
+    "detail": "Map out your future here."
+  },
+  "darkMode": {
+    "toggle": "Toggle dark mode",
+    "light": "Light",
+    "dark": "Dark"
+  },
+  "spatial": {
+    "currentPage": "Current page",
+    "close": "Close",
+    "switchToTraditional": "Switch to traditional navigation"
+  },
+  "footer": {
+    "copyright": "© {{year}} Kipnuni. All rights reserved."
+  },
+  "errors": {
+    "notFound": "Page not found",
+    "generic": "Something went wrong"
+  }
+}
