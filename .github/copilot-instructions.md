@@ -1,20 +1,23 @@
 # GitHub Copilot Instructions: Kipnuni Website
 
 ## Project Maintenance & Specifications
-- **CRITICAL - ALWAYS UPDATE `spec.md`**: The `spec.md` file is a living document. **Whenever the user provides an instruction to implement a new feature, modify the design, or change the logic, you MUST update `spec.md` to reflect these latest changes.** 
-  - Do this *alongside* or *before* writing the code. Do not wait for a separate prompt to update the documentation.
+
+- **CRITICAL - ALWAYS UPDATE `spec.md`**: The `spec.md` file is a living document. **Whenever the user provides an instruction to implement a new feature, modify the design, or change the logic, you MUST update `spec.md` to reflect these latest changes.**
+  - Do this _alongside_ or _before_ writing the code. Do not wait for a separate prompt to update the documentation.
   - Keep the "Status" column in feature tables up-to-date (e.g., change "Planned" to "Implemented" immediately after completing the work).
   - Add new utilized libraries to the Tech Stack tables.
   - Update the Project Structure tree if folders/files change significantly.
 - **User Intent Updates**: If the user's prompt implies a change to the website plan, requirements, or features, update `spec.md` first to reflect these new requirements before implementation.
 
 ## Architecture & Monorepo Constraints
+
 - **NPM Workspaces**: This is a monorepo partitioned into `frontend`, `api`, and `e2e`. Never mix frontend UI dependencies into the backend, or vice versa. Always run commands using workspace flags (e.g., `npm install <pkg> -w frontend`).
 - **Data Fetching**: The frontend uses TanStack Query (React Query) to fetch data. Never use plain `useEffect` for data fetching. Respect the strict query defaults (e.g., `staleTime: 60000`) to prevent backend billing spikes.
 - **Backend Constraints**: The backend runs on Azure Functions v4 (Node Model). Use `app.http` for route registration.
 - **Database Rules**: Do NOT use `mongoose` or traditional MongoDB TCP drivers. The app uses the stateless **MongoDB Atlas Data API** via REST/fetch. Always utilize the existing `api/src/shared/db_client.ts` layer.
 
 ## Code Style & Standards
+
 - **TypeScript**:
   - Use `interface` for object definitions and `type` for unions/intersections.
   - Use strict type checking (no implicit `any`, use `unknown` if necessary).
@@ -28,6 +31,7 @@
   - Support RTL (Right-to-Left) gracefully. If using direction-dependent margins/paddings, prefer logical properties (e.g., `ms-4` instead of `ml-4`) or rely on Tailwind's RTL support.
 
 ## Testing & Validation
+
 - **Requirement**: Write unit tests for new utilities and complex logic.
 - **Frontend**: Use Jest and React Testing Library (`npm run test -w frontend`). Prefer `screen.getByRole` queries for accessibility.
 - **Backend API**: Test handlers locally using Azure Functions Core tools or unit testing standard Function contexts.
@@ -35,6 +39,8 @@
 - **Validation**: After modifying code, ALWAYS verify test health.
 
 ## General Behavior
+
+- **Git Commands**: NEVER run any git commands (e.g., `git add`, `git commit`, `git push`, etc.) in the terminal without specifically being given permission by the user, even if all commands were allowed for the session.
 - **Conciseness**: Give short, direct answers. Avoid lengthy preambles.
 - **Security**: Never suggest committing secrets, API keys, or Auth0 credentials. Ensure `.env` and `local.settings.json` remain out of version control.
 - **Self-Correction**: If you make an assumption that turns out to be wrong regarding the tech stack (e.g., trying to write Express middleware instead of Azure Function hooks), immediately correct yourself.
