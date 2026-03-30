@@ -72,5 +72,11 @@
   "errors": {
     "notFound": "Sivua ei löytynyt",
     "generic": "Jokin meni pieleen"
+  },
+  "gameNav": {
+    "preload": "Lataa 3D-navigaattori",
+    "loading": "Ladataan 3D-navigaattoria…",
+    "open": "Avaa 3D-navigaattori",
+    "error": "Lataus epäonnistui — yritä uudelleen"
   }
 }

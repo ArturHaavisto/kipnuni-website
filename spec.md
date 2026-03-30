@@ -60,8 +60,9 @@ Pages are plotted on a virtual 2D grid `[X, Y]`:
   - _Sizing:_ Uses responsive `max-h-12 w-auto` / `max-w-12 h-auto` to flexibly fit the variable border thickness without arbitrary static dimensions.
 - **Toggle Button:** The toggle to revert to Traditional mode is located on the right side of the frame, vertically positioned at 25% (`1/4`) of the screen height (see [Navigation Toggle](#navigation-toggle)).
 - **Logo:** The application logo (`logo-website.png`) is displayed on the left side of the frame at 25% (`1/4`) of the screen height, contained within the border strip without crossing into the content area.
-- **Language Switcher:** A globe icon button on the right side of the frame at 75% (`3/4`) of the screen height. Clicking it opens a dropdown selector for the supported languages.
-- **Dark Mode Toggle:** A sun/moon icon button on the right side of the frame, positioned directly below the Language Switcher at 75% height. Toggling it switches the entire application between light and dark themes.
+- **Language Switcher:** A globe icon button on the left side of the frame at 75% (`3/4`) of the screen height. Clicking it opens a dropdown selector for the supported languages.
+- **Dark Mode Toggle:** A sun/moon icon button on the left side of the frame, positioned directly below the Language Switcher at 75% height. Toggling it switches the entire application between light and dark themes.
+- **Game Nav Trigger:** A gamepad icon button on the right side of the frame at 75% (`3/4`) of the screen height. Implements a two-state preload/open lifecycle (see [3D Minigame Navigator](#3d-minigame-navigator)).
 - **Inner Preview Container:** An absolute-positioned, white content container heavily inset (e.g., `inset-12`) from the screen edges, holding the active page content. Content inside is vertically scrollable (`overscroll-y-contain`), ensuring scrolling never overlaps the outer shell.
 
 #### Screen-Size Behavior (Experimental Mode)
@@ -93,15 +94,21 @@ Users can navigate the spatial grid via touch-and-drag gestures originating on t
 
 #### 3D Minigame Navigator
 
-To provide a highly interactive alternative way to traverse the spatial grid, Experimental Mode includes a 3D minigame overlay.
+To provide a highly interactive alternative way to traverse the spatial grid, Experimental Mode includes a 3D minigame **popup overlay**.
 
-- **Trigger & Layout:** A "Map" or "3D" toggle button is placed on the side frame. Pressing it opens an absolute-positioned, full-screen transparent modal containing a WebGL 3D canvas. Clicking anywhere on the modal outside of the main control button instantly closes the game without navigating.
-- **The 3D Scene:** The scene displays a flat structural "floor" separated into distinct zones perfectly mirroring the 2D spatial coordinate map (e.g., the center is `Now [0,0]`).
-- **The Player Object:** A controllable 3D object (initially a basic physics ball) represents the user's current navigational intent. A prominent 2D text box is overlaid at the top of the screen, dynamically displaying the name of the exact page/zone the ball is currently occupying.
-- **Zone Signage:** Each zone that the ball is _not_ currently residing in features a visible 3D sign or floating text indicating which page it represents, ensuring the map orientation is constantly clear.
-- **Control Mechanism (Virtual Joystick):** A single 2D virtual joystick button acts as the sole controller. Pressing and dragging this button applies physical force to the ball, making it roll or slide across the 3D floor in the corresponding direction.
-- **Navigation Execution:** Releasing (lifting the mouse/finger from) the joystick commits the action. The system calculates the ball's final coordinates on the floor; if it finishes in a new page's zone, the 3D overlay closes and the app natively triggers a spatial slide transition to that corresponding route.
-- **Lazy Loading (Performance):** The 3D engine libraries (`three`, `@react-three/fiber`, `@react-three/drei`) are highly heavy compared to a standard SPA payload (~600KB+ gzipped). To protect the core site's initial load time, these libraries and the Minigame component must be lazily loaded (`React.lazy()`) and dynamically imported _only_ when the user clicks the "3D" trigger button for the first time.
+- **Trigger Button & Preloading (Two-State):** A gamepad icon button is placed on the **right side** of the outer frame at **75% (`3/4`) of the screen height**. Because the 3D libraries are large (~600KB+ gzipped), the button implements a two-state lifecycle to keep the initial site lightweight:
+  1. **Idle state:** Dim/outlined icon. Clicking it triggers a dynamic `import()` that fetches all code-split chunks (Three.js, Rapier WASM, R3F, Drei, game components). The icon transitions to a loading spinner. The game does **not** open yet — this only preloads the module.
+  2. **Ready state:** Solid, colored (blue) icon. The chunks are cached in memory for the session. Clicking now opens the game popup instantly with no loading delay.
+  3. **Error state:** Red-tinted icon. Clicking retries the preload.
+  - The preload state is stored in a module-scope variable (persists across page navigations within the session, resets on hard reload).
+- **Popup Layout (~65% viewport):** The game opens as a centered popup (`65vw × 65vh`) with rounded corners, subtle shadow, and a semi-transparent dimmed backdrop (no blur) — the website remains visible around the popup. Clicking the backdrop closes the popup without navigating.
+- **The 3D Scene:** The scene displays a flat structural "floor" in a plus/cross shape, separated into distinct zones perfectly mirroring the 2D spatial coordinate map (e.g., the center is `Now [0,0]`). Each zone is color-coded and bounded by invisible physics walls. The physics simulation uses **zero gravity** so the ball cannot fall off the floor.
+- **Camera & Perspective:** The camera follows the ball with smooth interpolation (lerp), keeping the ball visually centered in the popup at all times. From the user's perspective, **the ball stays at the center while the floor scrolls beneath it**. This design scales to arbitrary numbers of zones — only the nearby zones need to be visible on screen at any time. The camera maintains a fixed isometric angle (looking down from Y=14, offset Z=10).
+- **The Player Object:** A controllable 3D physics ball represents the user's current navigational intent. It spawns at the zone matching the current page. The ball uses a dynamic rigid body with **locked Y-axis translation** (prevented from vertical movement), **locked rotations**, and high linear damping for responsive stopping. A prominent 2D text box (HUD) is overlaid at the top of the popup, dynamically displaying the localized name of the zone the ball is currently occupying.
+- **Zone Signage:** Each zone that the ball is _not_ currently residing in features a visible 3D floating text label indicating which page it represents, ensuring the map orientation is constantly clear.
+- **Control Mechanism (Virtual Joystick):** A single 2D virtual joystick (HTML overlay at the bottom-center of the popup) acts as the sole controller. The joystick writes normalized input ([-1, 1]) directly to a mutable ref, avoiding React state re-renders during drag. This input is read every animation frame and applied as **force** (not impulse) to the ball. A **velocity cap** (MAX_SPEED = 7 units/sec, ~0.7s per zone crossing) prevents excessive speed. When the joystick is released, the ball's velocity is zeroed instantly — there is no residual rolling or momentum; the ball only moves under direct user input.
+- **Navigation Execution:** Releasing (lifting the mouse/finger from) the joystick commits the action. After a ~150ms settlement delay, the system reads the ball's final zone; if it finishes in a new page's zone, the popup closes and the app triggers a spatial slide transition to the corresponding route.
+- **Lazy Loading (Performance):** The 3D engine libraries (`three`, `@react-three/fiber`, `@react-three/drei`, `@react-three/rapier`) are heavy compared to a standard SPA payload. To protect the core site's initial load time, these libraries and the game-nav module are code-split by Vite and dynamically imported _only_ when the user clicks the trigger button for the first time. No backend is needed — the preload is purely a frontend chunk fetch.
 
 ### Navigation Toggle
 
@@ -126,13 +133,13 @@ When the user switches navigation modes:
 
 ### Dark Mode
 
-| Aspect           | Detail                                                                                                                                                     |
-| ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Persistence      | `localStorage` via `usehooks-ts` `useLocalStorage('darkMode', <systemDefault>)`                                                                            |
-| Mechanism        | Toggles the `dark` class on `<html>`; Tailwind CSS v4 is configured with `@custom-variant dark (&:where(.dark, .dark *))` to enable class-based dark mode  |
-| Default          | System preference (`prefers-color-scheme: dark`), then persisted user choice                                                                               |
-| Toggle Placement | **Traditional:** Header actions bar (sun/moon icon) · **Experimental:** Right frame edge at 3/4 height, below Language Switcher (sun/moon icon via lucide) |
-| Hook             | `useDarkMode()` — returns `{ isDark, toggleDark }`                                                                                                         |
+| Aspect           | Detail                                                                                                                                                    |
+| ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Persistence      | `localStorage` via `usehooks-ts` `useLocalStorage('darkMode', <systemDefault>)`                                                                           |
+| Mechanism        | Toggles the `dark` class on `<html>`; Tailwind CSS v4 is configured with `@custom-variant dark (&:where(.dark, .dark *))` to enable class-based dark mode |
+| Default          | System preference (`prefers-color-scheme: dark`), then persisted user choice                                                                              |
+| Toggle Placement | **Traditional:** Header actions bar (sun/moon icon) · **Experimental:** Left frame edge at 3/4 height, below Language Switcher (sun/moon icon via lucide) |
+| Hook             | `useDarkMode()` — returns `{ isDark, toggleDark }`                                                                                                        |
 
 - The `useDarkMode` hook is initialized in `App.tsx` to ensure the dark class is always synced on mount, regardless of navigation mode.
 - All components use Tailwind `dark:` utility classes for dark-aware styling (e.g., `bg-white dark:bg-gray-950`).
@@ -208,6 +215,7 @@ frontend/src/content/
 | three                            | 0.16x.x | Core WebGL 3D rendering engine for minigame nav                                                          |
 | @react-three/fiber               | 8.x     | React renderer for Three.js (3D Minigame canvas)                                                         |
 | @react-three/drei                | 9.x     | Abstracted helpers/components for React Three Fiber                                                      |
+| @react-three/rapier              | 1.x     | WASM-based physics engine (Rapier) integration for React Three Fiber                                     |
 
 ### Backend
 
@@ -268,6 +276,17 @@ kipnuni-website/
 │   │   │   ├── zh/           # Chinese markdown content
 │   │   │   ├── ar/           # Arabic markdown content
 │   │   │   └── links.yaml    # Structured link data
+│   │   ├── game-nav/         # 3D Minigame Navigator (lazy-loaded, self-contained)
+│   │   │   ├── GameNavOverlay.tsx  # Popup overlay with Canvas + Physics
+│   │   │   ├── Floor.tsx           # 3D zoned floor (cross shape)
+│   │   │   ├── PlayerBall.tsx      # Physics rigid-body ball
+│   │   │   ├── CameraRig.tsx       # Camera that follows ball position
+│   │   │   ├── ZoneSignage.tsx     # Floating 3D text labels per zone
+│   │   │   ├── HUD.tsx             # 2D HTML overlay (current zone name)
+│   │   │   ├── VirtualJoystick.tsx # Draggable 2D joystick controller
+│   │   │   ├── constants.ts        # Shared physics/layout constants
+│   │   │   ├── useGameNavPreload.ts # Two-state preload lifecycle hook
+│   │   │   └── index.ts           # Barrel export
 │   │   ├── hooks/            # Custom React hooks
 │   │   └── i18n/locales/     # JSON translation files (UI strings)
 │   ├── package.json          # Frontend dependencies

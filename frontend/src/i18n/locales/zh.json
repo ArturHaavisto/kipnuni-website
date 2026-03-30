@@ -72,5 +72,11 @@
   "errors": {
     "notFound": "页面未找到",
     "generic": "出了点问题"
+  },
+  "gameNav": {
+    "preload": "加载3D导航器",
+    "loading": "正在加载3D导航器…",
+    "open": "打开3D导航器",
+    "error": "加载失败 — 点击重试"
   }
 }

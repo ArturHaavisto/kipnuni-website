@@ -72,5 +72,11 @@
   "errors": {
     "notFound": "Page not found",
     "generic": "Something went wrong"
+  },
+  "gameNav": {
+    "preload": "Load 3D Navigator",
+    "loading": "Loading 3D Navigator…",
+    "open": "Open 3D Navigator",
+    "error": "Failed to load — click to retry"
   }
 }
