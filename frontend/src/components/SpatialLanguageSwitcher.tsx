@@ -31,7 +31,7 @@ export function SpatialLanguageSwitcher() {
       </button>
 
       {open && (
-        <div className="absolute bottom-full right-0 mb-2 min-w-[120px] rounded-lg border border-gray-300 bg-white py-1 shadow-xl dark:border-gray-700 dark:bg-gray-900">
+        <div className="absolute bottom-full left-0 mb-2 min-w-[120px] rounded-lg border border-gray-300 bg-white py-1 shadow-xl dark:border-gray-700 dark:bg-gray-900">
           {supportedLanguages.map((lang) => (
             <button
               key={lang.code}
